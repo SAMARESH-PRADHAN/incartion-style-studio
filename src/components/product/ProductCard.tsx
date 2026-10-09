@@ -60,7 +60,7 @@ export function ProductCard({ p }: { p: Product }) {
       </button>
       <button
         onClick={() => setUI({ quickViewId: p.id })}
-        className="absolute inset-x-2 top-[calc(75%*4/3*0.75)] hidden translate-y-2 items-center justify-center gap-2 rounded-sm bg-background/95 py-2 text-xs font-bold uppercase opacity-0 shadow-card transition group-hover:translate-y-0 group-hover:opacity-100 lg:flex"
+        className="absolute inset-x-2 hidden translate-y-2 items-center justify-center gap-2 rounded-sm bg-background/95 py-2 text-xs font-bold uppercase opacity-0 shadow-card transition group-hover:translate-y-0 group-hover:opacity-100 lg:flex"
         style={{ top: "auto", bottom: "88px" }}
       >
         <Eye className="h-4 w-4" /> Quick view
