@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Award, BadgeIndianRupee, Truck, Layers, Receipt, Globe2, MousePointerClick, Palette, ShoppingCart, PackageCheck, Quote, ArrowRight } from "lucide-react";
+import { Award, Truck, Layers, Receipt, Globe2, MousePointerClick, Palette, ShoppingCart, PackageCheck, Quote, ArrowRight } from "lucide-react";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { CouponCard } from "@/components/common/CouponCard";
@@ -233,4 +233,3 @@ function Home() {
   );
 }
 
-export { BadgeIndianRupee };
