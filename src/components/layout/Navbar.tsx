@@ -100,11 +100,11 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur" onMouseLeave={() => setHover(null)}>
       <div className="mx-auto flex h-14 max-w-[1536px] items-center gap-3 px-3 sm:px-6 lg:h-16 lg:gap-6">
-        <button className="-ml-1 grid h-11 w-11 place-items-center lg:hidden" aria-label="Open menu" onClick={() => setUI({ drawerOpen: true })}>
+        <button className="-ml-1 grid h-11 w-11 place-items-center xl:hidden" aria-label="Open menu" onClick={() => setUI({ drawerOpen: true })}>
           <Menu className="h-5 w-5" />
         </button>
         <Logo />
-        <nav className="hidden h-full items-stretch lg:flex" aria-label="Categories">
+        <nav className="hidden h-full items-stretch xl:flex" aria-label="Categories">
           {categories.map((c) => (
             <Link
               key={c.slug}
@@ -112,7 +112,7 @@ export function Navbar() {
               search={{ category: c.slug }}
               onMouseEnter={() => setHover(c.slug)}
               className={cn(
-                "flex items-center border-b-4 border-transparent px-3 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-4",
+                "flex items-center whitespace-nowrap border-b-4 border-transparent px-2.5 text-[12px] font-bold uppercase tracking-wide transition-colors xl:px-4",
                 hover === c.slug && "border-primary",
               )}
             >
