@@ -1,3 +1,4 @@
+const EMPTY: never[] = [];
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,7 +11,7 @@ import { AddressCard, AddressForm } from "@/components/common/AddressForm";
 import { BillRows } from "@/components/product/BillBox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Stepper } from "./cart";
+import { Stepper } from "@/components/common/Stepper";
 import { useCartSummary } from "@/lib/cart";
 import { inr } from "@/lib/pricing";
 import { useAddresses, useCart, useOrders, useSession, newId, type Order } from "@/store";
@@ -78,7 +79,7 @@ function SuccessModal({ order, onClose }: { order: Order; onClose: (to: "/orders
 
 function Checkout() {
   const user = useSession((s) => s.user)!;
-  const addresses = useAddresses((s) => s.byUser[user.id] ?? []);
+  const addresses = useAddresses((s) => s.byUser[user.id] ?? EMPTY);
   const saveAddr = useAddresses((s) => s.save);
   const placeOrder = useOrders((s) => s.place);
   const clearCart = useCart((s) => s.clear);

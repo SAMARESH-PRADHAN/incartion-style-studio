@@ -1,3 +1,4 @@
+const EMPTY: never[] = [];
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Download, FastForward, PackageOpen, RotateCw, Star, XCircle, ChevronRight, Camera } from "lucide-react";
@@ -84,7 +85,7 @@ function ReviewDialog({ item, onClose, onDone }: { item: OrderItem; onClose: () 
 
 function OrdersPage() {
   const user = useSession((s) => s.user)!;
-  const orders = useOrders((s) => s.byUser[user.id] ?? []);
+  const orders = useOrders((s) => s.byUser[user.id] ?? EMPTY);
   const update = useOrders((s) => s.update);
   const addToCart = useCart((s) => s.add);
   const navigate = useNavigate();

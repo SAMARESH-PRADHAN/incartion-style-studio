@@ -1,3 +1,4 @@
+const EMPTY: never[] = [];
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, Plus } from "lucide-react";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/addresses")({
 
 function AddressesPage() {
   const user = useSession((s) => s.user)!;
-  const list = useAddresses((s) => s.byUser[user.id] ?? []);
+  const list = useAddresses((s) => s.byUser[user.id] ?? EMPTY);
   const { save, remove, setDefault } = useAddresses();
   const [editing, setEditing] = useState<Address | "new" | null>(null);
   return (

@@ -104,7 +104,7 @@ export function Navbar() {
           <Menu className="h-5 w-5" />
         </button>
         <Logo />
-        <nav className="hidden h-full items-stretch lg:flex" aria-label="Categories">
+        <nav className="hidden h-full items-stretch xl:flex" aria-label="Categories">
           {categories.map((c) => (
             <Link
               key={c.slug}
@@ -112,7 +112,7 @@ export function Navbar() {
               search={{ category: c.slug }}
               onMouseEnter={() => setHover(c.slug)}
               className={cn(
-                "flex items-center border-b-4 border-transparent px-3 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-4",
+                "flex items-center whitespace-nowrap border-b-4 border-transparent px-2.5 text-[12px] font-bold uppercase tracking-wide transition-colors xl:px-4",
                 hover === c.slug && "border-primary",
               )}
             >
