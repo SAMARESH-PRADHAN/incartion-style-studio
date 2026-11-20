@@ -12,5 +12,6 @@
 ## Project rules
 - Frontend-only demo: all persistence via zustand `persist` stores in `src/store` (skipHydration, rehydrated once in __root) so SSR markup matches first client render.
 - Pricing/coupon/GST logic lives only in `src/lib/pricing.ts` (tested in `src/test/pricing.test.ts`); UI must not re-implement it.
+- Print option prices and quantity-based customization charges stay centralized in `src/lib/pricing.ts`, with selected options and artwork metadata carried by cart and order items so every bill agrees.
 - Product/category/coupon catalog is static mock data in `src/data`; categories.ts is the source of truth for sub-categories.
 - tsconfig drops the extra-strict flags (exactOptionalPropertyTypes, noUncheckedIndexedAccess, etc.) to keep mock-data code readable.

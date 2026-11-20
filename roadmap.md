@@ -1,0 +1,6 @@
+- [ ] Replace School Uniform with Security Guard Uniform and reuse existing product imagery.
+- [ ] Add print options, artwork attachment, centralized charges, and cart/checkout/order/invoice display.
+- [ ] Add highlighted Incartion Exclusive navigation and readymade-only filtering.
+- [ ] Remove return promises and apply the final-sale policy.
+- [ ] Expand category subcategories inline and replace mobile bottom-bar items with Orders and Addresses.
+- [ ] Run pricing tests, inspect preview behavior, audit page metadata, and commit the changes.
