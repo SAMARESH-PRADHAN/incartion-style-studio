@@ -135,7 +135,7 @@ function Checkout() {
       const order: Order = {
         id: "INC" + Date.now().toString().slice(-8),
         createdAt: now,
-        items: lines.map(({ item, p, line }) => ({ productId: p.id, name: p.name, image: p.images[0], slug: p.slug, sizes: item.sizes, qty: line.qty, unit: line.unit, subtotal: line.subtotal, gstRate: line.gstRate, note: item.note })),
+        items: lines.map(({ item, p, line }) => ({ productId: p.id, name: p.name, image: p.images[0], slug: p.slug, sizes: item.sizes, qty: line.qty, unit: line.unit, subtotal: line.subtotal, gstRate: line.gstRate, note: item.note, printOptions: item.printOptions ?? ["none"], artwork: item.artwork ?? null, printCharges: line.printCharges })),
         address,
         payment: { method: methods.find((x) => x.id === m)!.l, detail },
         bill,
@@ -163,8 +163,11 @@ function Checkout() {
           {lines.map(({ item, p, line }) => (
             <li key={item.key} className="flex gap-2 text-sm">
               <img src={p.images[0]} alt="" className="h-12 w-10 rounded-sm object-cover" />
-              <span className="min-w-0 flex-1 truncate">{p.name}<span className="block text-xs text-muted-foreground">{line.qty} pcs</span></span>
-              <span className="font-bold">{inr(line.subtotal)}</span>
+              <span className="min-w-0 flex-1 truncate">{p.name}<span className="block text-xs text-muted-foreground">{line.qty} pcs</span>
+                {(item.printOptions ?? ["none"]).some((id) => id !== "none") && <span className="block truncate text-xs text-muted-foreground">Print selected</span>}
+                {item.artwork && <span className="block truncate text-xs text-muted-foreground">Artwork: {item.artwork.name}</span>}
+              </span>
+              <span className="font-bold">{inr(line.subtotal + line.printCharges)}</span>
             </li>
           ))}
         </ul>

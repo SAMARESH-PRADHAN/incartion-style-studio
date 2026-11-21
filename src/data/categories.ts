@@ -2,7 +2,6 @@ import medical from "@/assets/hero-medical.jpg";
 import corporate from "@/assets/hero-corporate.jpg";
 import hotel from "@/assets/hero-hotel.jpg";
 import industrial from "@/assets/cat-industrial.jpg";
-import school from "@/assets/cat-school.jpg";
 import tshirt from "@/assets/cat-tshirt.jpg";
 
 export type SubCategory = { slug: string; name: string };
@@ -64,16 +63,13 @@ export const categories: Category[] = [
     ],
   },
   {
-    slug: "school",
-    name: "School Uniform",
-    tagline: "Smart, durable, ready for class",
-    image: school,
+    slug: "security-guard",
+    name: "Security Guard Uniform",
+    tagline: "Reliable uniforms for every shift",
+    image: industrial,
     subs: [
       { slug: "shirt", name: "Shirt" },
-      { slug: "trouser", name: "Trouser" },
-      { slug: "skirt", name: "Skirt" },
-      { slug: "tie-belt", name: "Tie & Belt" },
-      { slug: "blazer", name: "Blazer" },
+      { slug: "pant", name: "Pant" },
     ],
   },
   {

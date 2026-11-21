@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { getProductById, type Product } from "@/data/products";
 import { coupons } from "@/data/coupons";
-import { cartBill, lineBill, validateCoupon, type Line } from "@/lib/pricing";
+import { cartBill, lineBill, printUnitCost, validateCoupon, type Line } from "@/lib/pricing";
 import { useCart, useOrders, useSession, type CartItem } from "@/store";
 
 export type CartLine = { item: CartItem; p: Product; line: Line };
@@ -15,7 +15,7 @@ export function useCartSummary() {
     const lines: CartLine[] = items
       .map((item) => ({ item, p: getProductById(item.productId)! }))
       .filter((x) => x.p)
-      .map((x) => ({ ...x, line: lineBill(x.p, x.item.sizes) }))
+      .map((x) => ({ ...x, line: lineBill(x.p, x.item.sizes, printUnitCost(x.item.printOptions ?? ["none"])) }))
       .filter((x) => x.line.qty > 0);
     const base = cartBill(lines.map((l) => l.line));
     const cRes = code ? validateCoupon(coupons.find((c) => c.code === code), { subtotal: base.subtotal, qty: base.qty, orderCount }) : null;

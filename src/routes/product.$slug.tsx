@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, ShoppingBag, Share2, Ruler, MapPin, Truck, ShieldCheck, RotateCcw, Check } from "lucide-react";
+import { Heart, ShoppingBag, Share2, Ruler, MapPin, Truck, ShieldCheck, Check, FileText, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { getProduct, getProductById, products, formatCount, type Product } from "@/data/products";
 import { getCategory, getSubName } from "@/data/categories";
@@ -15,8 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { cartBill, inr, lineBill, totalQty, unitPrice, type SizeQty } from "@/lib/pricing";
-import { useCart, useRecent, useRequireAuth, useUI, useWishlist } from "@/store";
+import { cartBill, inr, lineBill, PRINT_OPTIONS, printUnitCost, totalQty, unitPrice, type SizeQty } from "@/lib/pricing";
+import { useCart, useRecent, useRequireAuth, useUI, useWishlist, type ArtworkFile } from "@/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -96,6 +96,7 @@ function Gallery({ p }: { p: Product }) {
 const sizeChart = [
   ["XS", 34, 26, 27], ["S", 36, 28, 28], ["M", 38, 30, 29], ["L", 40, 32, 30], ["XL", 42, 34, 31], ["XXL", 44, 36, 32], ["3XL", 46, 38, 33],
 ];
+const printGroups = ["DTF Print", "Sublimation Print", "Embroidery Print"];
 
 function ProductPage() {
   const { id } = Route.useLoaderData();
@@ -103,6 +104,8 @@ function ProductPage() {
   const cat = getCategory(p.category)!;
   const [sizes, setSizes] = useState<SizeQty>({});
   const [note, setNote] = useState("");
+  const [selectedPrintOptions, setSelectedPrintOptions] = useState<string[]>(["none"]);
+  const [artwork, setArtwork] = useState<ArtworkFile | null>(null);
   const [pin, setPin] = useState("");
   const [pinMsg, setPinMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [chart, setChart] = useState(false);
@@ -118,11 +121,14 @@ function ProductPage() {
   useEffect(() => {
     setSizes({});
     setNote("");
+    setSelectedPrintOptions(["none"]);
+    setArtwork(null);
     if (hydrated) pushRecent(p.id);
   }, [p.id, hydrated]);
 
   const qty = totalQty(sizes);
-  const line = lineBill(p, sizes);
+  const printPrice = printUnitCost(selectedPrintOptions);
+  const line = lineBill(p, sizes, printPrice);
   const bill = cartBill([line]);
   const related = useMemo(() => products.filter((x) => x.id !== p.id && x.category === p.category).sort((a) => (a.subCategory === p.subCategory ? -1 : 1)).slice(0, 12), [p.id]);
   const recent = hydrated ? recentIds.filter((x) => x !== p.id).map(getProductById).filter(Boolean) as Product[] : [];
@@ -135,8 +141,10 @@ function ProductPage() {
     }
     const s = { ...sizes };
     const n = note;
+    const options = [...selectedPrintOptions];
+    const uploadedArtwork = artwork;
     requireAuth(() => {
-      addToCart(p.id, s, n);
+      addToCart(p.id, s, n, options, uploadedArtwork);
       toast.success(`${totalQty(s)} pcs added to bag`);
       setUI({ miniCartOpen: true });
       setSizes({});
@@ -192,6 +200,104 @@ function ProductPage() {
             </div>
           </div>
 
+          <section className="mt-6 border-t pt-5" aria-labelledby="print-options-title">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p id="print-options-title" className="eyebrow">Print &amp; customization type</p>
+              <span className="shrink-0 text-xs font-black text-primary">{inr(printPrice)}/pc</span>
+            </div>
+            <div className="space-y-4" role="group" aria-labelledby="print-options-title">
+              {PRINT_OPTIONS.filter((option) => option.group === "No Print").map((option) => (
+                <label key={option.id} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition", selectedPrintOptions.includes(option.id) ? "border-primary bg-primary/5" : "hover:border-primary/40")}>
+                  <input
+                    type="checkbox"
+                    checked={selectedPrintOptions.includes(option.id)}
+                    onChange={(event) => {
+                      if (event.currentTarget.checked) {
+                        setSelectedPrintOptions(["none"]);
+                        setArtwork(null);
+                      }
+                    }}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  <span className="min-w-0 flex-1 text-sm font-bold">{option.label}</span>
+                  <span className="text-xs font-black">FREE</span>
+                </label>
+              ))}
+              {printGroups.map((group) => (
+                <fieldset key={group} className="space-y-2">
+                  <legend className="mb-2 text-sm font-black">{group}</legend>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {PRINT_OPTIONS.filter((option) => option.group === group).map((option) => (
+                      <label key={option.id} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition", selectedPrintOptions.includes(option.id) ? "border-primary bg-primary/5" : "hover:border-primary/40")}>
+                        <input
+                          type="checkbox"
+                          checked={selectedPrintOptions.includes(option.id)}
+                          onChange={(event) => {
+                            const checked = event.currentTarget.checked;
+                            setSelectedPrintOptions((current) => {
+                              const next = new Set(current.filter((id) => id !== "none"));
+                              if (checked) next.add(option.id);
+                              else next.delete(option.id);
+                              return next.size ? [...next] : ["none"];
+                            });
+                          }}
+                          className="h-4 w-4 shrink-0 accent-primary"
+                        />
+                        <span className="min-w-0 flex-1 text-sm font-semibold">{option.label}</span>
+                        <span className="shrink-0 text-xs font-black">{option.unitPrice === 0 ? "FREE" : `${inr(option.unitPrice)}/pc`}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ))}
+            </div>
+            {!selectedPrintOptions.includes("none") && (
+              <div className="mt-4 space-y-3 rounded-sm border border-dashed p-3">
+                <label htmlFor="artwork-file" className="flex items-center gap-2 text-sm font-bold"><Upload className="h-4 w-4 text-primary" /> Upload Logo / Artwork (PNG, JPG, PDF)</label>
+                <Input
+                  id="artwork-file"
+                  type="file"
+                  accept="image/png,image/jpeg,application/pdf"
+                  className="h-auto min-h-11 py-2 file:mr-3 file:rounded-sm file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-xs file:font-bold"
+                  onClick={(event) => { event.currentTarget.value = ""; }}
+                  onChange={(event) => {
+                    const file = event.currentTarget.files?.[0];
+                    if (!file) return;
+                    const allowed = ["image/png", "image/jpeg", "application/pdf"].includes(file.type);
+                    if (!allowed) {
+                      toast.error("Please choose a PNG, JPG, or PDF file");
+                      event.currentTarget.value = "";
+                      return;
+                    }
+                    if (file.size > 1024 * 1024) {
+                      toast.error("Artwork must be under 1 MB");
+                      event.currentTarget.value = "";
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      if (typeof reader.result === "string") setArtwork({ name: file.name, type: file.type, dataUrl: reader.result });
+                    };
+                    reader.onerror = () => toast.error("Could not read this artwork file");
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                <p className="text-xs text-muted-foreground">PNG, JPG or PDF · up to 1 MB</p>
+                {artwork && (
+                  <div className="flex items-center gap-3 rounded-sm bg-secondary p-2">
+                    {artwork.type.startsWith("image/") ? (
+                      <img src={artwork.dataUrl} alt="Artwork preview" className="h-12 w-12 rounded-sm object-cover" />
+                    ) : (
+                      <span className="grid h-12 w-12 place-items-center rounded-sm bg-background"><FileText className="h-5 w-5 text-primary" /></span>
+                    )}
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold">{artwork.name}</span>
+                    <Button type="button" variant="ghost" className="h-9 w-9 p-0" aria-label="Clear uploaded artwork" onClick={() => setArtwork(null)}><X className="h-4 w-4" /></Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
           <div id="sizes" className="mt-6">
             <div className="mb-3 flex items-center justify-between">
               <p className="eyebrow">Select quantity per size</p>
@@ -238,7 +344,6 @@ function ProductPage() {
             {pinMsg && <p className={cn("mt-2 flex items-center gap-1 text-sm", pinMsg.ok ? "text-success" : "text-destructive")}>{pinMsg.ok ? <Check className="h-4 w-4" /> : <MapPin className="h-4 w-4" />}{pinMsg.t}</p>}
             <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
               <li className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> 100% original quality-checked garments</li>
-              <li className="flex items-center gap-2"><RotateCcw className="h-4 w-4" /> Easy 7-day returns on non-customised items</li>
               <li className="flex items-center gap-2"><Truck className="h-4 w-4" /> Free delivery above ₹999</li>
             </ul>
             <button onClick={share} className="mt-4 flex items-center gap-2 text-sm font-bold"><Share2 className="h-4 w-4" /> Share</button>

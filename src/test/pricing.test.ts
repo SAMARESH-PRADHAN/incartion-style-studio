@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { coupons } from "@/data/coupons";
-import { cartBill, unitPrice, validateCoupon, gstRateFor } from "@/lib/pricing";
+import { cartBill, lineBill, PRINT_OPTIONS, printUnitCost, unitPrice, validateCoupon, gstRateFor } from "@/lib/pricing";
 
 const c = (code: string) => coupons.find((x) => x.code === code);
 const now = new Date("2026-10-09");
@@ -41,5 +41,25 @@ describe("pricing rules", () => {
   it("GST is 5% up to ₹1000 per piece, 12% above", () => {
     expect(gstRateFor(1000)).toBe(5);
     expect(gstRateFor(1001)).toBe(12);
+  });
+  it("uses the requested per-piece print prices and totals selected charges by quantity", () => {
+    expect(PRINT_OPTIONS.map(({ id, unitPrice }) => [id, unitPrice])).toEqual([
+      ["none", 0],
+      ["dtf-chest-4x4", 0],
+      ["dtf-back-name", 40],
+      ["dtf-front-a4", 40],
+      ["dtf-back-a4", 40],
+      ["dtf-front-a3", 80],
+      ["dtf-back-a3", 80],
+      ["sublimation-a4", 30],
+      ["sublimation-back-name", 20],
+      ["sublimation-logo", 10],
+      ["embroidery-chest-logo", 20],
+    ]);
+    expect(printUnitCost(["dtf-back-name", "sublimation-logo", "embroidery-chest-logo"])).toBe(70);
+    expect(printUnitCost(["none", "dtf-back-name"])).toBe(0);
+    const line = lineBill({ mrp: 800, bulkPricing: [{ minQty: 1, price: 500 }] }, { M: 3 }, 70);
+    expect(line.printCharges).toBe(210);
+    expect(cartBill([line]).total).toBe(1785);
   });
 });

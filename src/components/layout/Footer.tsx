@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ShieldCheck, RotateCcw, Truck } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ShieldCheck, Truck } from "lucide-react";
 import { categories } from "@/data/categories";
 import { Logo } from "./Logo";
 
@@ -57,7 +57,6 @@ export function Footer() {
         <div className="mx-auto flex max-w-[1536px] flex-col items-center justify-between gap-4 px-4 py-5 text-xs text-muted-foreground sm:px-6 md:flex-row">
           <div className="flex flex-wrap justify-center gap-5">
             <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-success" /> 100% Secure payments</span>
-            <span className="flex items-center gap-1.5"><RotateCcw className="h-4 w-4 text-success" /> 7-day easy returns</span>
             <span className="flex items-center gap-1.5"><Truck className="h-4 w-4 text-success" /> Pan-India delivery</span>
           </div>
           <div className="flex flex-wrap justify-center gap-2">

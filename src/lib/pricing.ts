@@ -8,6 +8,27 @@ export type Tier = { minQty: number; price: number };
 export const FREE_DELIVERY_MIN = 999;
 export const DELIVERY_FEE = 79;
 
+export type PrintOption = { id: string; group: string; label: string; unitPrice: number };
+export const PRINT_OPTIONS: PrintOption[] = [
+  { id: "none", group: "No Print", label: "No Print", unitPrice: 0 },
+  { id: "dtf-chest-4x4", group: "DTF Print", label: "Chest Print (4 × 4 inch)", unitPrice: 0 },
+  { id: "dtf-back-name", group: "DTF Print", label: "Back Name (9 × 2 inch)", unitPrice: 40 },
+  { id: "dtf-front-a4", group: "DTF Print", label: "Front Print (A4)", unitPrice: 40 },
+  { id: "dtf-back-a4", group: "DTF Print", label: "Back Print (A4)", unitPrice: 40 },
+  { id: "dtf-front-a3", group: "DTF Print", label: "Front Print (A3)", unitPrice: 80 },
+  { id: "dtf-back-a3", group: "DTF Print", label: "Back Print (A3)", unitPrice: 80 },
+  { id: "sublimation-a4", group: "Sublimation Print", label: "Sublimation A4 Print", unitPrice: 30 },
+  { id: "sublimation-back-name", group: "Sublimation Print", label: "Sublimation Back Name", unitPrice: 20 },
+  { id: "sublimation-logo", group: "Sublimation Print", label: "Sublimation Logo", unitPrice: 10 },
+  { id: "embroidery-chest-logo", group: "Embroidery Print", label: "Chest Logo (1–3 thread colors)", unitPrice: 20 },
+];
+
+export function printUnitCost(optionIds: string[]) {
+  if (optionIds.includes("none")) return 0;
+  const selected = new Set(optionIds);
+  return PRINT_OPTIONS.reduce((total, option) => total + (selected.has(option.id) ? option.unitPrice : 0), 0);
+}
+
 export const inr = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
 export const totalQty = (s: SizeQty) => Object.values(s).reduce<number>((a, b) => a + (b || 0), 0);
 
@@ -21,12 +42,12 @@ export function unitPrice(tiers: Tier[], qty: number) {
 /** Indian GST on apparel: 5% up to ₹1000 per piece, 12% above. */
 export const gstRateFor = (unit: number) => (unit <= 1000 ? 5 : 12);
 
-export type Line = { qty: number; unit: number; subtotal: number; mrpTotal: number; gstRate: number };
+export type Line = { qty: number; unit: number; subtotal: number; mrpTotal: number; gstRate: number; printCharges: number };
 
-export function lineBill(p: { mrp: number; bulkPricing: Tier[] }, sizes: SizeQty): Line {
+export function lineBill(p: { mrp: number; bulkPricing: Tier[] }, sizes: SizeQty, printUnit = 0): Line {
   const qty = totalQty(sizes);
   const unit = unitPrice(p.bulkPricing, Math.max(qty, 1));
-  return { qty, unit, subtotal: unit * qty, mrpTotal: p.mrp * qty, gstRate: gstRateFor(unit) };
+  return { qty, unit, subtotal: unit * qty, mrpTotal: p.mrp * qty, gstRate: gstRateFor(unit), printCharges: printUnit * qty };
 }
 
 export type CouponResult = { ok: true; discount: number } | { ok: false; error: string };
@@ -53,6 +74,7 @@ export type Bill = {
   subtotal: number;
   productDiscount: number;
   couponDiscount: number;
+  printCharges: number;
   gst: number;
   delivery: number;
   total: number;
@@ -63,6 +85,7 @@ export function cartBill(lines: Line[], couponDiscount = 0): Bill {
   const qty = lines.reduce((a, l) => a + l.qty, 0);
   const mrpTotal = lines.reduce((a, l) => a + l.mrpTotal, 0);
   const subtotal = lines.reduce((a, l) => a + l.subtotal, 0);
+  const printCharges = lines.reduce((a, l) => a + l.printCharges, 0);
   const cd = Math.min(couponDiscount, subtotal);
   const ratio = subtotal ? (subtotal - cd) / subtotal : 0;
   const gst = Math.round(lines.reduce((a, l) => a + (l.subtotal * l.gstRate) / 100, 0) * ratio);
@@ -74,9 +97,10 @@ export function cartBill(lines: Line[], couponDiscount = 0): Bill {
     subtotal,
     productDiscount: mrpTotal - subtotal,
     couponDiscount: cd,
+    printCharges,
     gst,
     delivery,
-    total: taxable + gst + delivery,
+    total: taxable + gst + delivery + printCharges,
     saved: mrpTotal - subtotal + cd,
   };
 }

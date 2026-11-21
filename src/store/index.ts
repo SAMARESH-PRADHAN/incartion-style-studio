@@ -21,11 +21,12 @@ export const useSession = create<{ user: SessionUser | null; login: (u: SessionU
   ),
 );
 
-export type CartItem = { key: string; productId: string; sizes: SizeQty; note: string };
+export type ArtworkFile = { name: string; type: string; dataUrl: string };
+export type CartItem = { key: string; productId: string; sizes: SizeQty; note: string; printOptions?: string[]; artwork?: ArtworkFile | null };
 type CartState = {
   items: CartItem[];
   coupon: string | null;
-  add: (productId: string, sizes: SizeQty, note: string) => void;
+  add: (productId: string, sizes: SizeQty, note: string, printOptions?: string[], artwork?: ArtworkFile | null) => void;
   update: (key: string, patch: Partial<CartItem>) => void;
   remove: (key: string) => void;
   clear: () => void;
@@ -36,15 +37,21 @@ export const useCart = create<CartState>()(
     (set) => ({
       items: [],
       coupon: null,
-      add: (productId, sizes, note) =>
+      add: (productId, sizes, note, printOptions = ["none"], artwork = null) =>
         set((s) => {
-          const ex = s.items.find((i) => i.productId === productId);
+          const normalizedOptions = [...new Set(printOptions)].sort();
+          const ex = s.items.find((i) =>
+            i.productId === productId &&
+            JSON.stringify([...(i.printOptions ?? ["none"])].sort()) === JSON.stringify(normalizedOptions) &&
+            (i.artwork?.name ?? "") === (artwork?.name ?? "") &&
+            (i.artwork?.dataUrl ?? "") === (artwork?.dataUrl ?? ""),
+          );
           if (ex) {
             const merged: SizeQty = { ...ex.sizes };
             for (const [k, v] of Object.entries(sizes)) merged[k as keyof SizeQty] = (merged[k as keyof SizeQty] || 0) + (v || 0);
             return { items: s.items.map((i) => (i.key === ex.key ? { ...i, sizes: merged, note: note || i.note } : i)) };
           }
-          return { items: [...s.items, { key: uid(), productId, sizes, note }] };
+          return { items: [...s.items, { key: uid(), productId, sizes, note, printOptions: normalizedOptions, artwork }] };
         }),
       update: (key, patch) => set((s) => ({ items: s.items.map((i) => (i.key === key ? { ...i, ...patch } : i)) })),
       remove: (key) => set((s) => ({ items: s.items.filter((i) => i.key !== key) })),
@@ -130,6 +137,9 @@ export type OrderItem = {
   subtotal: number;
   gstRate: number;
   note: string;
+  printOptions?: string[];
+  artwork?: ArtworkFile | null;
+  printCharges?: number;
 };
 export type Order = {
   id: string;

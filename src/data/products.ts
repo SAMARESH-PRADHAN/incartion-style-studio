@@ -30,6 +30,7 @@ export type Product = {
   tags: string[];
   isNew: boolean;
   isBestSeller: boolean;
+  isExclusive: boolean;
   stock: number;
   createdAt: number;
 };
@@ -52,18 +53,18 @@ const adjectives: Record<string, string[]> = {
   corporate: ["Executive", "Oxford", "Slim-Fit", "Premium"],
   hotel: ["Grand", "Royal", "Heritage", "Signature"],
   industrial: ["HeavyDuty", "ToughGuard", "WorkPro", "Rugged"],
-  school: ["Smart", "Classic", "Everyday", "Premium"],
+  "security-guard": ["Sentinel", "GuardPro", "DutyFit", "Command"],
   tshirt: ["Essential", "Bio-Wash", "Dri-Fit", "Premium"],
 };
 const basePrice: Record<string, number> = {
   "scrub-suit": 899, aprons: 349, shirt: 649, trouser: 799, blazer: 2499, "chef-coat": 1199,
-  waistcoat: 899, dungaree: 1299, "safety-jacket": 599, skirt: 549, "tie-belt": 249, "round-neck": 299, polo: 449,
+  waistcoat: 899, dungaree: 1299, "safety-jacket": 599, pant: 799, skirt: 549, "tie-belt": 249, "round-neck": 299, polo: 449,
 };
 const subMaterials: Record<string, string[]> = {
   "scrub-suit": ["Poly-Cotton", "Blend", "Cotton"], aprons: ["Cotton", "Poly-Cotton", "Denim"],
   shirt: ["Cotton", "Poly-Cotton", "Linen"], trouser: ["Poly-Cotton", "Blend", "Polyester"],
   blazer: ["Blend", "Polyester", "Linen"], "chef-coat": ["Cotton", "Poly-Cotton"], waistcoat: ["Polyester", "Blend"],
-  dungaree: ["Denim", "Cotton", "Poly-Cotton"], "safety-jacket": ["Nylon", "Polyester"], skirt: ["Poly-Cotton", "Blend"],
+  dungaree: ["Denim", "Cotton", "Poly-Cotton"], "safety-jacket": ["Nylon", "Polyester"], pant: ["Poly-Cotton", "Cotton", "Polyester"], skirt: ["Poly-Cotton", "Blend"],
   "tie-belt": ["Polyester", "Nylon"], "round-neck": ["Cotton", "Blend"], polo: ["Cotton", "Polyester", "Blend"],
 };
 const colorsAll = ["Navy", "White", "Black", "Teal", "Grey", "Maroon", "Sky Blue", "Olive", "Royal Blue", "Bottle Green", "Orange", "Beige"];
@@ -74,6 +75,7 @@ function primaryImage(cat: string, sub: string) {
   if (sub === "safety-jacket") return safety;
   if (sub === "chef-coat" || sub === "waistcoat" || sub === "aprons") return chef;
   if (sub === "blazer" || (cat === "corporate" && sub !== "trouser")) return blazer;
+  if (cat === "security-guard") return safety;
   if (cat === "tshirt") return catImage.tshirt;
   return catImage[cat];
 }
@@ -148,6 +150,7 @@ categories.forEach((cat) =>
         tags: [cat.name, sub.name, material],
         isNew: r() < 0.25,
         isBestSeller: r() < 0.3,
+        isExclusive: i === 0,
         stock: 50 + Math.floor(r() * 2000),
         createdAt: baseTime + n * 86400000,
       });

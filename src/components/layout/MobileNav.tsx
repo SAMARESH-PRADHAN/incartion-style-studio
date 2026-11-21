@@ -1,10 +1,9 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Heart, Home, LayoutGrid, ShoppingBag, User, Package, MapPin, LogOut, Info, Phone } from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Home, LayoutGrid, User, Package, MapPin, LogOut, Info, Phone, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { categories } from "@/data/categories";
-import { useCart, useSession, useUI, useWishlist, useRequireAuth } from "@/store";
-import { totalQty } from "@/lib/pricing";
+import { useSession, useUI } from "@/store";
 import { Logo } from "./Logo";
 import { initials } from "./Navbar";
 import { cn } from "@/lib/utils";
@@ -44,6 +43,9 @@ export function MobileDrawer() {
           )}
         </SheetHeader>
         <div className="p-2">
+          <Link to="/products" search={{ exclusive: true }} onClick={close} className="mx-2 mb-3 flex min-h-12 items-center gap-3 rounded-sm bg-accent/15 px-3 text-sm font-black text-accent">
+            <Sparkles className="h-4 w-4" /> Incartion Exclusive
+          </Link>
           <p className="eyebrow px-3 pb-1 pt-3 text-muted-foreground">Shop by category</p>
           <Accordion type="single" collapsible>
             {categories.map((c) => (
@@ -87,28 +89,19 @@ export function MobileDrawer() {
 
 export function MobileBottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const hydrated = useUI((s) => s.hydrated);
   const setUI = useUI((s) => s.set);
   const user = useSession((s) => s.user);
   const openLogin = useUI((s) => s.openLogin);
-  const wish = useWishlist((s) => s.ids.length);
-  const bag = useCart((s) => s.items.reduce((a, i) => a + totalQty(i.sizes), 0));
-  const requireAuth = useRequireAuth();
-  const navigate = useNavigate();
   if (path.startsWith("/product/") || path === "/checkout") return null;
-  const item = "relative flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-bold min-h-[52px]";
+  const item = "relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-bold";
   const active = (p: string) => (path === p ? "text-primary" : "text-foreground");
-  const count = (n: number) =>
-    hydrated && n > 0 ? (
-      <span className="absolute right-[22%] top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] text-primary-foreground">{n}</span>
-    ) : null;
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t bg-background pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Bottom navigation">
       <Link to="/" className={cn(item, active("/"))}><Home className="h-5 w-5" />Home</Link>
       <button onClick={() => setUI({ drawerOpen: true })} className={cn(item, active("/products"))}><LayoutGrid className="h-5 w-5" />Categories</button>
-      <Link to="/wishlist" className={cn(item, active("/wishlist"))}><Heart className="h-5 w-5" />Wishlist{count(wish)}</Link>
-      <button onClick={() => requireAuth(() => navigate({ to: "/cart" }))} className={cn(item, active("/cart"))}><ShoppingBag className="h-5 w-5" />Bag{count(bag)}</button>
-      <button onClick={() => (user ? navigate({ to: "/orders" }) : openLogin())} className={cn(item, active("/orders"))}><User className="h-5 w-5" />{user ? "Profile" : "Login"}</button>
+      <Link to="/orders" className={cn(item, active("/orders"))}><Package className="h-5 w-5" />My Orders</Link>
+      <Link to="/addresses" className={cn(item, active("/addresses"))}><MapPin className="h-5 w-5" />My Addresses</Link>
+      <button onClick={() => !user && openLogin()} className={cn(item, active("/login"))} aria-label={user ? "Profile" : "Login"}><User className="h-5 w-5" />{user ? "Profile" : "Login"}</button>
     </nav>
   );
 }

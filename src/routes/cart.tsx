@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCartSummary } from "@/lib/cart";
 import { activeCoupons, coupons } from "@/data/coupons";
-import { inr, validateCoupon } from "@/lib/pricing";
+import { inr, PRINT_OPTIONS, printUnitCost, validateCoupon } from "@/lib/pricing";
 import { couponHeadline } from "@/components/common/CouponCard";
 import { useCart, useWishlist } from "@/store";
 import { cn } from "@/lib/utils";
@@ -80,7 +80,13 @@ function CartPage() {
                       <span key={s} className="rounded-sm bg-secondary px-2 py-1 text-xs font-bold">{s}: {v}</span>
                     ))}
                   </div>
-                  <p className="mt-2 text-sm"><span className="font-black">{inr(line.subtotal)}</span> <span className="text-xs text-muted-foreground line-through">{inr(line.mrpTotal)}</span> <span className="text-xs font-bold text-accent">{line.qty} pcs @ {inr(line.unit)}</span></p>
+                  <p className="mt-2 text-sm"><span className="font-black">{inr(line.subtotal + line.printCharges)}</span> <span className="text-xs text-muted-foreground line-through">{inr(line.mrpTotal)}</span> <span className="text-xs font-bold text-accent">{line.qty} pcs @ {inr(line.unit + printUnitCost(item.printOptions ?? ["none"]))}</span></p>
+                  {(item.printOptions ?? ["none"]).some((id) => id !== "none") && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Print: {(item.printOptions ?? []).filter((id) => id !== "none").map((id) => PRINT_OPTIONS.find((option) => option.id === id)?.label ?? id).join(", ")} · {inr(line.printCharges)}
+                    </p>
+                  )}
+                  {item.artwork && <p className="mt-1 truncate text-xs text-muted-foreground">Artwork: {item.artwork.name}</p>}
                   {item.note && editing !== item.key && <p className="mt-1 truncate text-xs text-muted-foreground">Note: {item.note}</p>}
                 </div>
               </div>

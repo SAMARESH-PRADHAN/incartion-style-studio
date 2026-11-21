@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Menu, Search, ShoppingBag, User, Package, MapPin, LogOut, ChevronDown, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, User, Package, MapPin, LogOut, ChevronDown, X, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { categories } from "@/data/categories";
 import { useCart, useSession, useUI, useWishlist, useRequireAuth } from "@/store";
@@ -119,6 +119,13 @@ export function Navbar() {
               {c.name}
             </Link>
           ))}
+          <Link
+            to="/products"
+            search={{ exclusive: true }}
+            className="my-auto flex h-9 items-center gap-1 whitespace-nowrap rounded-sm bg-accent/15 px-2.5 text-[11px] font-black normal-case text-accent transition hover:bg-accent/25"
+          >
+            <Sparkles className="h-3.5 w-3.5" /> Incartion Exclusive
+          </Link>
         </nav>
         <div className="ml-auto hidden max-w-md flex-1 md:block">
           <SearchBox />

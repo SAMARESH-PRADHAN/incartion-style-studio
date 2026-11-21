@@ -34,46 +34,45 @@ function TiltCard({ c, open, onToggle }: { c: Category; open: boolean; onToggle:
 
 export function CategoryGrid() {
   const [open, setOpen] = useState<string | null>(null);
-  const active = categories.find((c) => c.slug === open);
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-        {categories.map((c) => (
-          <TiltCard key={c.slug} c={c} open={open === c.slug} onToggle={() => setOpen(open === c.slug ? null : c.slug)} />
-        ))}
-      </div>
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            key={active.slug}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-5 rounded-md border bg-secondary p-4 sm:p-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <p className="eyebrow text-primary">Pick a style in {active.name}</p>
-                <Link to="/products" search={{ category: active.slug }} className="flex items-center gap-1 text-sm font-bold">
-                  View all <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {active.subs.map((s) => (
-                  <Link
-                    key={s.slug}
-                    to="/products"
-                    search={{ category: active.slug, sub: s.slug }}
-                    className="rounded-full border bg-background px-5 py-2.5 text-sm font-bold transition hover:border-primary hover:text-primary"
-                  >
-                    {s.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="grid grid-cols-2 items-start gap-3 sm:gap-5 lg:grid-cols-3">
+      {categories.map((c) => {
+        const expanded = open === c.slug;
+        return (
+          <div key={c.slug} className="min-w-0">
+            <TiltCard c={c} open={expanded} onToggle={() => setOpen(expanded ? null : c.slug)} />
+            <AnimatePresence initial={false}>
+              {expanded && (
+                <motion.div
+                  key={c.slug}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-3 border-t pt-3">
+                    <Link to="/products" search={{ category: c.slug }} className="mb-2 flex items-center gap-1 text-xs font-bold text-primary">
+                      View all {c.name} <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                    <div className="flex flex-wrap gap-2">
+                      {c.subs.map((s) => (
+                        <Link
+                          key={s.slug}
+                          to="/products"
+                          search={{ category: c.slug, sub: s.slug }}
+                          className="rounded-sm bg-secondary px-3 py-2 text-xs font-bold transition hover:text-primary"
+                        >
+                          {s.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
     </div>
   );
 }

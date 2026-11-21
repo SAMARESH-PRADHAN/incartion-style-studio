@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { inr } from "@/lib/pricing";
+import { PRINT_OPTIONS } from "@/lib/pricing";
 import { ORDER_STEPS, useCart, useOrders, useReviews, useSession, newId, type Order, type OrderItem } from "@/store";
 import { downloadInvoice } from "@/lib/invoice";
 import { cn } from "@/lib/utils";
@@ -102,7 +103,7 @@ function OrdersPage() {
   }, [user.id]);
 
   const reorder = (o: Order) => {
-    o.items.forEach((i) => addToCart(i.productId, i.sizes, i.note));
+    o.items.forEach((i) => addToCart(i.productId, i.sizes, i.note, i.printOptions ?? ["none"], i.artwork ?? null));
     toast.success("Items added to bag");
     navigate({ to: "/cart" });
   };
@@ -147,7 +148,7 @@ function OrdersPage() {
                       <img src={it.image} alt={it.name} className="h-16 w-12 rounded-sm object-cover" />
                       <div className="min-w-0 flex-1">
                         <Link to="/product/$slug" params={{ slug: it.slug }} className="block truncate text-sm font-bold hover:text-primary">{it.name}</Link>
-                        <p className="text-xs text-muted-foreground">{Object.entries(it.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")} · {inr(it.subtotal)}</p>
+                        <p className="text-xs text-muted-foreground">{Object.entries(it.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")} · {inr(it.subtotal + (it.printCharges ?? 0))}</p>
                       </div>
                       {delivered && (o.reviewed.includes(it.productId) ? (
                         <span className="text-xs font-bold text-success">Reviewed ✓</span>
@@ -188,6 +189,8 @@ function OrdersPage() {
                     <div key={it.productId} className="mb-2 rounded-sm border p-2">
                       <p className="font-bold">{it.name}</p>
                       <p className="text-xs text-muted-foreground">{Object.entries(it.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")} · {it.qty} pcs @ {inr(it.unit)}</p>
+                      {(it.printOptions ?? ["none"]).some((id) => id !== "none") && <p className="mt-1 text-xs text-muted-foreground">Print: {(it.printOptions ?? []).filter((id) => id !== "none").map((id) => PRINT_OPTIONS.find((option) => option.id === id)?.label ?? id).join(", ")}</p>}
+                      {it.artwork && <p className="mt-1 truncate text-xs text-muted-foreground">Artwork: {it.artwork.name}</p>}
                       {it.note && <p className="mt-1 text-xs">Note: {it.note}</p>}
                     </div>
                   ))}

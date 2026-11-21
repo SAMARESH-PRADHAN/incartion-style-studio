@@ -48,6 +48,7 @@ export async function downloadInvoice(o: Order, user: SessionUser) {
     ["Discount", "- " + rs(b.productDiscount)],
     ...(b.couponDiscount ? [[`Coupon (${o.coupon})`, "- " + rs(b.couponDiscount)] as [string, string]] : []),
     ["Taxable value", rs(b.subtotal - b.couponDiscount)],
+    ["Print & customization", rs(b.printCharges)],
     ["CGST", rs(b.gst / 2)],
     ["SGST", rs(b.gst / 2)],
     ["Delivery", b.delivery ? rs(b.delivery) : "FREE"],
