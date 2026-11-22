@@ -101,7 +101,7 @@ export function MobileBottomNav() {
       <button onClick={() => setUI({ drawerOpen: true })} className={cn(item, active("/products"))}><LayoutGrid className="h-5 w-5" />Categories</button>
       <Link to="/orders" className={cn(item, active("/orders"))}><Package className="h-5 w-5" />My Orders</Link>
       <Link to="/addresses" className={cn(item, active("/addresses"))}><MapPin className="h-5 w-5" />My Addresses</Link>
-      <button onClick={() => !user && openLogin()} className={cn(item, active("/login"))} aria-label={user ? "Profile" : "Login"}><User className="h-5 w-5" />{user ? "Profile" : "Login"}</button>
+      <button onClick={() => (user ? setUI({ drawerOpen: true }) : openLogin())} className={cn(item, active("/login"))} aria-label={user ? "Profile" : "Login"}><User className="h-5 w-5" />{user ? "Profile" : "Login"}</button>
     </nav>
   );
 }

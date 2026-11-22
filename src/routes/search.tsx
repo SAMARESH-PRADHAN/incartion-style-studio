@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 
 export const Route = createFileRoute("/search")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
-  head: () => ({ meta: [{ title: "Search — Incartion" }, { name: "description", content: "Search Incartion uniforms." }, { property: "og:title", content: "Search — Incartion" }, { property: "og:description", content: "Search Incartion uniforms." }] }),
+  head: () => ({ meta: [{ title: "Search — Incartion" }, { name: "description", content: "Search Incartion uniforms and garments." }, { property: "og:title", content: "Search — Incartion" }, { property: "og:description", content: "Search Incartion uniforms and garments." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: SearchPage,
 });
 

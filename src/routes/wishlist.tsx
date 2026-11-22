@@ -13,6 +13,8 @@ export const Route = createFileRoute("/wishlist")({
       { name: "description", content: "Uniforms and garments you saved for later." },
       { property: "og:title", content: "My Wishlist — Incartion" },
       { property: "og:description", content: "Your saved Incartion products." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: WishlistPage,

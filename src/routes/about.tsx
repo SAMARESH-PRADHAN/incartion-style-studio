@@ -17,6 +17,8 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "Our story, mission and manufacturing process. Incartion makes uniforms in Bhubaneswar, Odisha for clients across India." },
       { property: "og:title", content: "About Incartion" },
       { property: "og:description", content: "Uniforms crafted in Bhubaneswar, from 1 piece to bulk." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: About,

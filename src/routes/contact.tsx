@@ -17,6 +17,8 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Call, email or visit Incartion in Bhubaneswar. Get help with orders, bulk quotes and customisation." },
       { property: "og:title", content: "Contact Incartion" },
       { property: "og:description", content: "Reach our Bhubaneswar team for orders and bulk quotes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Contact,
@@ -27,7 +29,7 @@ const faqs = [
   ["Can you add our company logo?", "Yes — embroidery or printing. Add a note on the product page or request a quote for 25+ pieces."],
   ["How long does delivery take?", "Ready stock ships in 2–3 days. Customised orders take 7–14 days depending on quantity."],
   ["Do you provide GST invoices?", "Yes, every order includes a GST invoice you can download from My Orders once delivered."],
-  ["What is your return policy?", "Non-customised items can be returned within 7 days of delivery in unused condition."],
+  ["What is your return policy?", "Final Sale / No Returns: As garments are manufactured and customized to order, Incartion does not accept returns or exchanges except for proven transit damage or manufacturing defects reported within 48 hours."],
 ];
 
 function Contact() {

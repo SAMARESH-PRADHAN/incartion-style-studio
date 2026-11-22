@@ -24,6 +24,8 @@ export const Route = createFileRoute("/checkout")({
       { name: "description", content: "Choose your delivery address and pay securely." },
       { property: "og:title", content: "Checkout — Incartion" },
       { property: "og:description", content: "Secure checkout for your uniform order." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => <RequireAuth><Checkout /></RequireAuth>,

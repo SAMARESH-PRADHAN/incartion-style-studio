@@ -24,6 +24,8 @@ export const Route = createFileRoute("/cart")({
       { name: "description", content: "Review your bag, apply coupons and place your uniform order." },
       { property: "og:title", content: "Shopping Bag — Incartion" },
       { property: "og:description", content: "Review items, apply coupons and checkout." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => <RequireAuth><CartPage /></RequireAuth>,
@@ -143,7 +145,7 @@ function CartPage() {
           </div>
         </aside>
       </div>
-      <div className="fixed inset-x-0 bottom-[52px] z-30 flex items-center gap-3 border-t bg-background p-3 lg:hidden">
+      <div className="fixed inset-x-0 bottom-14 z-30 flex items-center gap-3 border-t bg-background p-3 lg:hidden">
         <div className="min-w-0 flex-1"><p className="text-lg font-black">{inr(bill.total)}</p><p className="text-xs text-success">You save {inr(bill.saved)}</p></div>
         <Button className="flex-1" onClick={() => navigate({ to: "/checkout" })}>Place order</Button>
       </div>

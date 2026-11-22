@@ -17,6 +17,8 @@ export const Route = createFileRoute("/addresses")({
       { name: "description", content: "Manage your saved delivery addresses." },
       { property: "og:title", content: "My Addresses — Incartion" },
       { property: "og:description", content: "Add, edit and set default delivery addresses." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => <RequireAuth><AddressesPage /></RequireAuth>,

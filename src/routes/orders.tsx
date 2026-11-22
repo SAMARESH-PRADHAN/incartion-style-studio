@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { inr } from "@/lib/pricing";
-import { PRINT_OPTIONS } from "@/lib/pricing";
+import { inr, PRINT_OPTIONS } from "@/lib/pricing";
 import { ORDER_STEPS, useCart, useOrders, useReviews, useSession, newId, type Order, type OrderItem } from "@/store";
 import { downloadInvoice } from "@/lib/invoice";
 import { cn } from "@/lib/utils";
@@ -26,6 +25,8 @@ export const Route = createFileRoute("/orders")({
       { name: "description", content: "Track your Incartion orders, download GST invoices and review products." },
       { property: "og:title", content: "My Orders — Incartion" },
       { property: "og:description", content: "Track orders, download invoices and leave reviews." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => <RequireAuth><OrdersPage /></RequireAuth>,

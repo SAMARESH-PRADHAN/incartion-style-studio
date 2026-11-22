@@ -21,9 +21,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Incartion — Uniforms from 1 piece to bulk | Bhubaneswar" },
-      { name: "description", content: "Shop medical, corporate, hotel, industrial and school uniforms and T-shirts. Custom logo embroidery, bulk pricing, GST invoice, pan-India delivery." },
+      { name: "description", content: "Shop medical, corporate, hotel, industrial and security guard uniforms and T-shirts. Custom logo printing, bulk pricing, GST invoice, pan-India delivery." },
       { property: "og:title", content: "Incartion — Uniforms from 1 piece to bulk" },
       { property: "og:description", content: "Custom uniforms and garments from Bhubaneswar, Odisha. Order 1 piece or 10,000." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,

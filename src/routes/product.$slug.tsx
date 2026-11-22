@@ -27,7 +27,15 @@ export const Route = createFileRoute("/product/$slug")({
   },
   head: ({ loaderData }) => {
     const p = loaderData ? getProductById(loaderData.id) : undefined;
-    if (!p) return { meta: [{ title: "Product not found — Incartion" }, { name: "robots", content: "noindex" }] };
+    if (!p) return { meta: [
+      { title: "Product not found — Incartion" },
+      { name: "description", content: "This Incartion product could not be found." },
+      { property: "og:title", content: "Product not found — Incartion" },
+      { property: "og:description", content: "This Incartion product could not be found." },
+      { property: "og:type", content: "product" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex" },
+    ] };
     const d = `${p.name} at ₹${p.price} (${p.discountPercent}% OFF). Bulk pricing from ₹${p.bulkPricing[3].price}/pc. Custom logo available.`;
     return {
       meta: [
@@ -36,6 +44,7 @@ export const Route = createFileRoute("/product/$slug")({
         { property: "og:title", content: `${p.name} — Incartion` },
         { property: "og:description", content: d },
         { property: "og:type", content: "product" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },

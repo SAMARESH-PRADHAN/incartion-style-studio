@@ -8,6 +8,8 @@ export const Route = createFileRoute("/login")({
       { name: "description", content: "Login or create your Incartion account to order uniforms." },
       { property: "og:title", content: "Login — Incartion" },
       { property: "og:description", content: "Access your Incartion account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Login,

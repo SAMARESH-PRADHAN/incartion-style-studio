@@ -35,8 +35,8 @@ describe("pricing rules", () => {
     expect(validateCoupon(c("FESTIVE25"), { subtotal: 5000, qty: 5, orderCount: 0, now }).ok).toBe(false);
   });
   it("free delivery from ₹999, otherwise ₹79", () => {
-    expect(cartBill([{ qty: 1, unit: 500, subtotal: 500, mrpTotal: 800, gstRate: 5 }]).delivery).toBe(79);
-    expect(cartBill([{ qty: 2, unit: 500, subtotal: 1000, mrpTotal: 1600, gstRate: 5 }]).delivery).toBe(0);
+    expect(cartBill([{ qty: 1, unit: 500, subtotal: 500, mrpTotal: 800, gstRate: 5, printCharges: 0 }]).delivery).toBe(79);
+    expect(cartBill([{ qty: 2, unit: 500, subtotal: 1000, mrpTotal: 1600, gstRate: 5, printCharges: 0 }]).delivery).toBe(0);
   });
   it("GST is 5% up to ₹1000 per piece, 12% above", () => {
     expect(gstRateFor(1000)).toBe(5);

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/common/Reveal";
 import { cn } from "@/lib/utils";
 
-type Search = { category?: string; sub?: string; material?: string; min?: number; max?: number; sort?: string };
+type Search = { category?: string; sub?: string; material?: string; min?: number; max?: number; sort?: string; exclusive?: boolean };
 const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 const num = (v: unknown) => (v === undefined || v === "" || isNaN(Number(v)) ? undefined : Number(v));
 
@@ -23,13 +23,16 @@ export const Route = createFileRoute("/products")({
     min: num(s.min),
     max: num(s.max),
     sort: str(s.sort),
+    exclusive: s.exclusive === true || s.exclusive === "true" ? true : undefined,
   }),
   head: () => ({
     meta: [
       { title: "Shop Uniforms & Garments — Incartion" },
-      { name: "description", content: "Browse 80+ uniforms: scrubs, chef coats, blazers, dungarees, school uniforms and T-shirts. Filter by category, price and material." },
+      { name: "description", content: "Browse uniforms including scrubs, chef coats, blazers, industrial wear, security guard uniforms and T-shirts. Filter by category, price and material." },
       { property: "og:title", content: "Shop Uniforms & Garments — Incartion" },
       { property: "og:description", content: "Filter by category, sub-category, price and fabric. Bulk pricing on every product." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProductsPage,
@@ -56,6 +59,7 @@ function ProductsPage() {
         category: n.cats.join(",") || undefined,
         sub: n.subs.join(",") || undefined,
         material: n.mats.join(",") || undefined,
+        exclusive: search.exclusive || undefined,
         min: n.min > PRICE_MIN ? n.min : undefined,
         max: n.max < PRICE_MAX ? n.max : undefined,
         sort: (p.sort ?? sort) === "recommended" ? undefined : (p.sort ?? sort),
@@ -64,7 +68,7 @@ function ProductsPage() {
       resetScroll: false,
     });
   };
-  const results = useMemo(() => filterProducts(products, { ...f, sort }), [search]);
+  const results = useMemo(() => filterProducts(products, { ...f, sort }).filter((product) => !search.exclusive || product.isExclusive), [search]);
   const [shown, setShown] = useState(PAGE);
   const [loading, setLoading] = useState(true);
   const [sheet, setSheet] = useState<"filter" | "sort" | null>(null);
@@ -93,14 +97,14 @@ function ProductsPage() {
   }, [results.length, loading]);
 
   const single = f.cats.length === 1 ? getCategory(f.cats[0]) : undefined;
-  const title = single ? (f.subs.length === 1 ? `${single.name} ${getSubName(single.slug, f.subs[0])}` : single.name) : "All Products";
+  const title = search.exclusive ? "Incartion Exclusive" : single ? (f.subs.length === 1 ? `${single.name} ${getSubName(single.slug, f.subs[0])}` : single.name) : "All Products";
   const chips = [
     ...f.cats.map((c) => ({ k: "cat" + c, l: getCategory(c)?.name ?? c, rm: () => update({ cats: f.cats.filter((x) => x !== c) }) })),
     ...f.subs.map((s) => ({ k: "sub" + s, l: categories.flatMap((c) => c.subs).find((x) => x.slug === s)?.name ?? s, rm: () => update({ subs: f.subs.filter((x) => x !== s) }) })),
     ...f.mats.map((m) => ({ k: "mat" + m, l: m, rm: () => update({ mats: f.mats.filter((x) => x !== m) }) })),
     ...(f.min > PRICE_MIN || f.max < PRICE_MAX ? [{ k: "price", l: `₹${f.min} – ₹${f.max}`, rm: () => update({ min: PRICE_MIN, max: PRICE_MAX }) }] : []),
   ];
-  const clearAll = () => navigate({ search: {}, replace: true });
+  const clearAll = () => navigate({ search: search.exclusive ? { exclusive: true } : {}, replace: true });
 
   return (
     <div>
@@ -186,7 +190,7 @@ function ProductsPage() {
         </div>
       </Container>
 
-      <div className="fixed inset-x-0 bottom-[52px] z-30 grid grid-cols-2 border-t bg-background lg:hidden">
+      <div className="fixed inset-x-0 bottom-14 z-30 grid grid-cols-2 border-t bg-background lg:hidden">
         <button onClick={() => setSheet("sort")} className="flex h-12 items-center justify-center gap-2 border-r text-sm font-bold uppercase"><ArrowUpDown className="h-4 w-4" /> Sort</button>
         <button onClick={() => setSheet("filter")} className="flex h-12 items-center justify-center gap-2 text-sm font-bold uppercase">
           <SlidersHorizontal className="h-4 w-4" /> Filter {chips.length > 0 && <span className="grid h-5 w-5 place-items-center rounded-full bg-primary text-[10px] text-primary-foreground">{chips.length}</span>}

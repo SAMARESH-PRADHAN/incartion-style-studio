@@ -65,7 +65,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Incartion — Uniforms & Garments from 1 piece to bulk" },
-      { name: "description", content: "Incartion, Bhubaneswar: medical, corporate, hotel, industrial & school uniforms and T-shirts. Order from 1 piece to bulk." },
+      { name: "description", content: "Incartion, Bhubaneswar: medical, corporate, hotel, industrial and security guard uniforms, plus T-shirts. Order from 1 piece to bulk." },
       { name: "author", content: "Incartion" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
