@@ -11,7 +11,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { useCart, useQuotes, useUI } from "@/store";
 import { getProductById } from "@/data/products";
 import { categories } from "@/data/categories";
-import { inr, lineBill, totalQty } from "@/lib/pricing";
+import { inr, lineBill, printUnitCost, totalQty } from "@/lib/pricing";
 import { ProductInfoQuick } from "@/components/product/QuickInfo";
 
 export function LoginModal() {
@@ -49,7 +49,10 @@ export function MiniCart() {
   const remove = useCart((s) => s.remove);
   const navigate = useNavigate();
   const lines = items.map((i) => ({ i, p: getProductById(i.productId) })).filter((x) => x.p);
-  const total = lines.reduce((a, { i, p }) => a + lineBill(p!, i.sizes).subtotal, 0);
+  const total = lines.reduce((a, { i, p }) => {
+    const line = lineBill(p!, i.sizes, printUnitCost(i.printOptions ?? ["none"]));
+    return a + line.subtotal + line.printCharges;
+  }, 0);
   return (
     <Sheet open={open} onOpenChange={(o) => setUI({ miniCartOpen: o })}>
       <SheetContent side="right" className="flex w-[92vw] max-w-md flex-col p-0">
@@ -57,21 +60,24 @@ export function MiniCart() {
           <SheetTitle className="eyebrow text-left">Added to your bag ✓</SheetTitle>
         </SheetHeader>
         <div className="flex-1 space-y-3 overflow-y-auto p-4">
-          {lines.map(({ i, p }) => (
-            <div key={i.key} className="flex gap-3 rounded-sm border p-2">
-              <img src={p!.images[0]} alt={p!.name} className="h-20 w-16 rounded-sm object-cover" />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold">{p!.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {Object.entries(i.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")}
-                </p>
-                <p className="mt-1 text-sm font-bold">{inr(lineBill(p!, i.sizes).subtotal)} <span className="text-xs font-normal text-muted-foreground">· {totalQty(i.sizes)} pcs</span></p>
+          {lines.map(({ i, p }) => {
+            const line = lineBill(p!, i.sizes, printUnitCost(i.printOptions ?? ["none"]));
+            return (
+              <div key={i.key} className="flex gap-3 rounded-sm border p-2">
+                <img src={p!.images[0]} alt={p!.name} className="h-20 w-16 rounded-sm object-cover" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold">{p!.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {Object.entries(i.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")}
+                  </p>
+                  <p className="mt-1 text-sm font-bold">{inr(line.subtotal + line.printCharges)} <span className="text-xs font-normal text-muted-foreground">· {totalQty(i.sizes)} pcs</span></p>
+                </div>
+                <button aria-label="Remove" onClick={() => remove(i.key)} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-primary">
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
-              <button aria-label="Remove" onClick={() => remove(i.key)} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-primary">
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="border-t p-4">
           <div className="mb-3 flex justify-between text-sm font-bold"><span>Subtotal</span><span>{inr(total)}</span></div>

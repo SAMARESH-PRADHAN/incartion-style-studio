@@ -8,7 +8,7 @@ export function BillRows({ bill, couponCode }: { bill: Bill; couponCode?: string
       <div className={row}><span>Total MRP</span><span>{inr(bill.mrpTotal)}</span></div>
       <div className={row}><span>Discount on MRP</span><span className="text-success">-{inr(bill.productDiscount)}</span></div>
       {bill.couponDiscount > 0 && <div className={row}><span>Coupon {couponCode ? `(${couponCode})` : ""}</span><span className="text-success">-{inr(bill.couponDiscount)}</span></div>}
-      <div className={row}><span>Print &amp; Customization Charges</span><span>{inr(bill.printCharges)}</span></div>
+      <div className={row}><span>Print &amp; Customization Charges</span><span>{inr(bill.printCharges ?? 0)}</span></div>
       <div className={row}><span>GST</span><span>{inr(bill.gst)}</span></div>
       <div className={row}>
         <span>Delivery fee</span>

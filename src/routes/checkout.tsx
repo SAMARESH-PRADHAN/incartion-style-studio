@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Stepper } from "@/components/common/Stepper";
 import { useCartSummary } from "@/lib/cart";
-import { inr } from "@/lib/pricing";
+import { inr, PRINT_OPTIONS } from "@/lib/pricing";
 import { useAddresses, useCart, useOrders, useSession, newId, type Order } from "@/store";
 import { cn } from "@/lib/utils";
 
@@ -162,16 +162,19 @@ function Checkout() {
       </button>
       <div className={cn("mt-3", !showSummary && "hidden lg:block")}>
         <ul className="mb-3 space-y-2 border-b pb-3">
-          {lines.map(({ item, p, line }) => (
-            <li key={item.key} className="flex gap-2 text-sm">
-              <img src={p.images[0]} alt="" className="h-12 w-10 rounded-sm object-cover" />
-              <span className="min-w-0 flex-1 truncate">{p.name}<span className="block text-xs text-muted-foreground">{line.qty} pcs</span>
-                {(item.printOptions ?? ["none"]).some((id) => id !== "none") && <span className="block truncate text-xs text-muted-foreground">Print selected</span>}
-                {item.artwork && <span className="block truncate text-xs text-muted-foreground">Artwork: {item.artwork.name}</span>}
-              </span>
-              <span className="font-bold">{inr(line.subtotal + line.printCharges)}</span>
-            </li>
-          ))}
+          {lines.map(({ item, p, line }) => {
+            const printLabels = (item.printOptions ?? []).filter((id) => id !== "none").map((id) => PRINT_OPTIONS.find((option) => option.id === id)?.label ?? id);
+            return (
+              <li key={item.key} className="flex gap-2 text-sm">
+                <img src={p.images[0]} alt="" className="h-12 w-10 rounded-sm object-cover" />
+                <span className="min-w-0 flex-1 truncate">{p.name}<span className="block text-xs text-muted-foreground">{line.qty} pcs</span>
+                  {printLabels.length > 0 && <span className="block truncate text-xs text-muted-foreground">{printLabels.join(", ")}</span>}
+                  {item.artwork && <span className="block truncate text-xs text-muted-foreground">Artwork: {item.artwork.name}</span>}
+                </span>
+                <span className="font-bold">{inr(line.subtotal + line.printCharges)}</span>
+              </li>
+            );
+          })}
         </ul>
         <BillRows bill={bill} couponCode={code} />
       </div>
