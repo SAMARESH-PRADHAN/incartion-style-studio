@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "rounded-sm bg-primary uppercase tracking-wide text-primary-foreground hover:brightness-95 active:scale-[0.98]",
-        pill: "rounded-full bg-primary uppercase tracking-wide text-primary-foreground hover:brightness-95 active:scale-[0.98]",
+          "rounded-sm bg-primary uppercase tracking-wide text-primary-foreground shadow-sm hover:brightness-90 hover:shadow-md active:scale-[0.99]",
+        pill: "rounded-full bg-primary uppercase tracking-wide text-primary-foreground shadow-sm hover:brightness-90 hover:shadow-md active:scale-[0.99]",
         destructive: "rounded-sm bg-destructive text-destructive-foreground hover:brightness-95",
         outline:
-          "rounded-sm border border-input bg-background uppercase tracking-wide text-foreground hover:border-foreground",
+          "rounded-sm border border-foreground/20 bg-background uppercase tracking-wide text-foreground hover:border-foreground/60 hover:bg-secondary",
         outlinePink:
-          "rounded-sm border border-primary bg-background uppercase tracking-wide text-primary hover:bg-primary/5",
+          "rounded-sm border border-foreground/20 bg-background uppercase tracking-wide text-foreground hover:border-foreground/60 hover:bg-secondary",
         secondary: "rounded-sm bg-secondary text-secondary-foreground hover:bg-border",
         ghost: "rounded-sm hover:bg-secondary",
         link: "text-primary underline-offset-4 hover:underline",

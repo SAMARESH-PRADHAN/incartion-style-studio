@@ -9,7 +9,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
 import appCss from "../styles.css?url";
@@ -69,7 +69,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Incartion" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "theme-color", content: "#FF3F6C" },
+      { name: "theme-color", content: "#111111" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -102,9 +102,18 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const previousPath = useRef(path);
+  const [routeLoading, setRouteLoading] = useState(false);
   useEffect(() => {
     rehydrateAll();
   }, []);
+  useEffect(() => {
+    if (previousPath.current === path) return;
+    previousPath.current = path;
+    setRouteLoading(true);
+    const timer = window.setTimeout(() => setRouteLoading(false), 360);
+    return () => window.clearTimeout(timer);
+  }, [path]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [path]);
@@ -112,6 +121,19 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
+        <AnimatePresence>
+          {routeLoading && (
+            <motion.div
+              key={path}
+              aria-hidden="true"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 0.82 }}
+              exit={{ scaleX: 1, opacity: 0 }}
+              transition={{ duration: 0.32, ease: "easeInOut" }}
+              className="fixed inset-x-0 top-0 z-[100] h-0.5 origin-left bg-primary shadow-sm"
+            />
+          )}
+        </AnimatePresence>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:bg-background focus:p-2">Skip to content</a>
         <OfferTicker thin={onProduct} />
         <Navbar />

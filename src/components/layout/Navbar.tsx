@@ -38,7 +38,7 @@ function ProfileMenu() {
     <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-full border py-1 pl-1 pr-3 transition hover:shadow-card"
+        className="flex items-center gap-2 rounded-full border border-border/80 py-1 pl-1 pr-3 transition hover:border-foreground/30 hover:shadow-card"
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -98,7 +98,7 @@ export function Navbar() {
   const goBag = () => requireAuth(() => navigate({ to: "/cart" }));
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur" onMouseLeave={() => setHover(null)}>
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 shadow-sm backdrop-blur-md" onMouseLeave={() => setHover(null)}>
       <div className="mx-auto flex h-14 max-w-[1536px] items-center gap-3 px-3 sm:px-6 lg:h-16 lg:gap-6">
         <button className="-ml-1 grid h-11 w-11 place-items-center xl:hidden" aria-label="Open menu" onClick={() => setUI({ drawerOpen: true })}>
           <Menu className="h-5 w-5" />
@@ -122,7 +122,7 @@ export function Navbar() {
           <Link
             to="/products"
             search={{ exclusive: true }}
-            className="my-auto flex h-9 items-center gap-1 whitespace-nowrap rounded-sm bg-accent/15 px-2.5 text-[11px] font-black normal-case text-accent transition hover:bg-accent/25"
+            className="premium-sheen my-auto flex h-9 items-center gap-1 whitespace-nowrap rounded-full border border-foreground/15 bg-secondary px-3 text-[11px] font-black normal-case text-foreground shadow-sm transition-colors hover:border-foreground/40 hover:bg-foreground hover:text-background"
           >
             <Sparkles className="h-3.5 w-3.5" /> Incartion Exclusive
           </Link>

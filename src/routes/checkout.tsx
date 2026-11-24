@@ -50,7 +50,7 @@ function luhn(n: string) {
 function SuccessModal({ order, onClose }: { order: Order; onClose: (to: "/orders" | "/") => void }) {
   useEffect(() => {
     import("canvas-confetti").then(({ default: confetti }) => {
-      const colors = ["#FF3F6C", "#FF905A", "#03A685", "#ffffff"];
+      const colors = ["#121214", "#27272A", "#A1A1AA", "#FFFFFF"];
       confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 }, colors });
       setTimeout(() => confetti({ particleCount: 80, angle: 60, spread: 70, origin: { x: 0 }, colors }), 300);
       setTimeout(() => confetti({ particleCount: 80, angle: 120, spread: 70, origin: { x: 1 }, colors }), 500);

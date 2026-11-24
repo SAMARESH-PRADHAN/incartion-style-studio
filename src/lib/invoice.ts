@@ -7,8 +7,8 @@ export async function downloadInvoice(o: Order, user: SessionUser) {
   const { jsPDF } = await import("jspdf");
   const autoTable = (await import("jspdf-autotable")).default;
   const doc = new jsPDF();
-  const pink: [number, number, number] = [255, 63, 108];
-  doc.setFillColor(...pink);
+  const obsidian: [number, number, number] = [18, 18, 20];
+  doc.setFillColor(...obsidian);
   doc.rect(0, 0, 210, 30, "F");
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(22).setFont("helvetica", "bold").text("INCARTION", 14, 18);
@@ -37,7 +37,7 @@ export async function downloadInvoice(o: Order, user: SessionUser) {
       `${it.gstRate}%`,
       rs(it.subtotal),
     ]),
-    headStyles: { fillColor: [40, 44, 63] },
+    headStyles: { fillColor: [39, 39, 42] },
     styles: { fontSize: 8 },
   });
   const b = o.bill;
