@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowUp, MessageCircle, Phone, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -146,13 +147,15 @@ export function QuoteModal() {
 
 export function FloatingButtons() {
   const [show, setShow] = useState(false);
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const hideOnMobileProduct = path.startsWith("/product/");
   useEffect(() => {
     const on = () => setShow(window.scrollY > 600);
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
   return (
-    <div className="fixed bottom-20 right-3 z-30 flex flex-col gap-2 lg:bottom-6 lg:right-6">
+    <div className={`fixed bottom-20 right-3 z-30 flex flex-col gap-2 lg:bottom-6 lg:right-6 ${hideOnMobileProduct ? "hidden lg:flex" : ""}`}>
       {show && (
         <button aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="grid h-11 w-11 place-items-center rounded-full border bg-background shadow-pop">
           <ArrowUp className="h-5 w-5" />

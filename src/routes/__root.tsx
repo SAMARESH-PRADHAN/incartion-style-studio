@@ -157,7 +157,7 @@ function RootComponent() {
         <QuickView />
         <QuoteModal />
         <FloatingButtons />
-        <Toaster position="top-center" richColors />
+        <Toaster position="top-center" />
       </MotionConfig>
     </QueryClientProvider>
   );

@@ -212,11 +212,11 @@ function ProductPage() {
           <section className="mt-6 border-t pt-5" aria-labelledby="print-options-title">
             <div className="mb-3 flex items-center justify-between gap-3">
               <p id="print-options-title" className="eyebrow">Print &amp; customization type</p>
-              <span className="shrink-0 text-xs font-black text-primary">{inr(printPrice)}/pc</span>
+              <span className="shrink-0 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-black text-foreground">{inr(printPrice)}/pc</span>
             </div>
             <div className="space-y-4" role="group" aria-labelledby="print-options-title">
               {PRINT_OPTIONS.filter((option) => option.group === "No Print").map((option) => (
-                <label key={option.id} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition", selectedPrintOptions.includes(option.id) ? "border-primary bg-primary/5" : "hover:border-primary/40")}>
+                <label key={option.id} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition-colors", selectedPrintOptions.includes(option.id) ? "border-foreground bg-secondary shadow-card" : "border-border bg-background hover:border-foreground/40 hover:bg-secondary/50")}>
                   <input
                     type="checkbox"
                     checked={selectedPrintOptions.includes(option.id)}
@@ -234,10 +234,10 @@ function ProductPage() {
               ))}
               {printGroups.map((group) => (
                 <fieldset key={group} className="space-y-2">
-                  <legend className="mb-2 text-sm font-black">{group}</legend>
+                  <legend className="mb-2 text-xs font-black uppercase tracking-wide">{group}</legend>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {PRINT_OPTIONS.filter((option) => option.group === group).map((option) => (
-                      <label key={option.id} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition", selectedPrintOptions.includes(option.id) ? "border-primary bg-primary/5" : "hover:border-primary/40")}>
+                      <label key={option.id} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition-colors", selectedPrintOptions.includes(option.id) ? "border-foreground bg-secondary shadow-card" : "border-border bg-background hover:border-foreground/40 hover:bg-secondary/50")}>
                         <input
                           type="checkbox"
                           checked={selectedPrintOptions.includes(option.id)}
@@ -261,7 +261,7 @@ function ProductPage() {
               ))}
             </div>
             {!selectedPrintOptions.includes("none") && (
-              <div className="mt-4 space-y-3 rounded-sm border border-dashed p-3">
+              <div className="mt-4 space-y-3 rounded-sm border border-dashed border-foreground/30 bg-secondary/30 p-4 transition-colors hover:border-foreground/60">
                 <label htmlFor="artwork-file" className="flex items-center gap-2 text-sm font-bold"><Upload className="h-4 w-4 text-primary" /> Upload Logo / Artwork (PNG, JPG, PDF)</label>
                 <Input
                   id="artwork-file"
@@ -320,7 +320,7 @@ function ProductPage() {
             <Textarea id="note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Logo placement, embroidery text, colour preferences, special instructions…" maxLength={500} />
           </div>
 
-          <div className="mt-6 rounded-sm border bg-secondary/50 p-4">
+          <div className="mt-6 rounded-sm border border-border bg-background p-4 shadow-card">
             <p className="eyebrow mb-3">Calculated bill</p>
             {qty === 0 ? (
               <p className="text-sm text-muted-foreground">Add quantities above to see your live bill.</p>

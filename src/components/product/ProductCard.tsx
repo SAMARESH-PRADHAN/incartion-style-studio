@@ -24,11 +24,11 @@ export function ProductCard({ p }: { p: Product }) {
   const setUI = useUI((s) => s.set);
   const on = hydrated && wished;
   return (
-    <article className="group relative overflow-hidden rounded-sm bg-card transition-shadow hover:shadow-card">
+    <article className="group premium-lift relative overflow-hidden rounded-sm border border-border/70 bg-card">
       <Link to="/product/$slug" params={{ slug: p.slug }} className="block">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
-          <img src={p.images[0]} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 group-hover:opacity-0" />
-          <img src={p.images[1]} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition duration-500 group-hover:scale-100 group-hover:opacity-100" />
+          <img src={p.images[0]} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-0" />
+          <img src={p.images[1]} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100" />
           <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-sm bg-background/90 px-1.5 py-0.5 text-[11px] font-bold">
             {p.rating} <span className="text-rating">★</span> <span className="text-muted-foreground">| {formatCount(p.ratingCount)}</span>
           </span>
@@ -52,7 +52,7 @@ export function ProductCard({ p }: { p: Product }) {
           toast(added ? "Added to wishlist" : "Removed from wishlist");
         }}
         className={cn(
-          "absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-background/90 shadow-card transition lg:opacity-0 lg:group-hover:opacity-100",
+          "absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full border border-border/70 bg-background/90 shadow-card backdrop-blur-sm transition hover:scale-105 lg:opacity-0 lg:group-hover:opacity-100",
           on && "lg:opacity-100",
         )}
       >

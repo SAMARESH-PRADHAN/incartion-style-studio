@@ -15,11 +15,12 @@ function TiltCard({ c, open, onToggle }: { c: Category; open: boolean; onToggle:
           setT({ x: (e.clientX - r.left) / r.width - 0.5, y: (e.clientY - r.top) / r.height - 0.5 });
         }}
         onMouseLeave={() => setT({ x: 0, y: 0 })}
-        className="preserve-3d relative aspect-[4/5] overflow-hidden rounded-md shadow-card transition-transform duration-200 ease-out sm:aspect-[4/3]"
+        className="group preserve-3d premium-lift relative aspect-[4/5] overflow-hidden rounded-sm shadow-card transition-transform duration-200 ease-out sm:aspect-[4/3]"
         style={{ transform: `rotateY(${t.x * 12}deg) rotateX(${-t.y * 12}deg)` }}
       >
         <img src={c.image} alt={c.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-110" />
         <div className="pointer-events-none absolute inset-0 bg-shade" />
+        <div className="pointer-events-none absolute inset-0 bg-foreground/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <button onClick={onToggle} aria-expanded={open} className="absolute inset-0 flex flex-col justify-end p-3 text-left text-primary-foreground sm:p-5" style={{ transform: "translateZ(40px)" }}>
           <span className="text-base font-black uppercase leading-tight sm:text-2xl">{c.name}</span>
           <span className="mt-1 hidden text-sm opacity-90 sm:block">{c.tagline}</span>
@@ -50,7 +51,7 @@ export function CategoryGrid() {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-3 border-t pt-3">
+                  <div className="mt-3 border-t border-border/80 pt-3">
                     <Link to="/products" search={{ category: c.slug }} className="mb-2 flex items-center gap-1 text-xs font-bold text-primary">
                       View all {c.name} <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
@@ -60,7 +61,7 @@ export function CategoryGrid() {
                           key={s.slug}
                           to="/products"
                           search={{ category: c.slug, sub: s.slug }}
-                          className="rounded-sm bg-secondary px-3 py-2 text-xs font-bold transition hover:text-primary"
+                          className="rounded-sm border border-border/70 bg-secondary px-3 py-2 text-xs font-bold transition-colors hover:border-foreground/40 hover:bg-foreground hover:text-background"
                         >
                           {s.name}
                         </Link>
