@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Address } from "@/store";
 import { cn } from "@/lib/utils";
+import { Briefcase, Home, Phone } from "lucide-react";
 
 const empty: Omit<Address, "id"> = { name: "", mobile: "", pincode: "", address: "", locality: "", city: "Bhubaneswar", state: "Odisha", type: "Home", isDefault: false };
 
@@ -47,7 +48,7 @@ export function AddressForm({ initial, onSave, onCancel }: { initial?: Address; 
       {field("state", "State *")}
       <div className="flex gap-2 sm:col-span-2">
         {(["Home", "Work"] as const).map((t) => (
-          <button type="button" key={t} onClick={() => setF({ ...f, type: t })} className={cn("h-10 rounded-full border px-5 text-sm font-bold", f.type === t && "border-primary text-primary")}>{t}</button>
+          <button type="button" key={t} onClick={() => setF({ ...f, type: t })} className={cn("h-10 rounded-full border px-5 text-sm font-bold", f.type === t && "border-premium text-premium bg-premium/10")}>{t}</button>
         ))}
       </div>
       <label className="flex items-center gap-2 text-sm sm:col-span-2">
@@ -62,17 +63,34 @@ export function AddressForm({ initial, onSave, onCancel }: { initial?: Address; 
 }
 
 export function AddressCard({ a, selected, onSelect, actions }: { a: Address; selected?: boolean; onSelect?: () => void; actions?: React.ReactNode }) {
+  const TypeIcon = a.type === "Home" ? Home : Briefcase;
   return (
-    <div onClick={onSelect} className={cn("rounded-sm border p-4 transition", onSelect && "cursor-pointer", selected && "border-primary shadow-card")}>
+    <div
+      onClick={onSelect}
+      className={cn(
+        "group relative h-full overflow-hidden rounded-xl border bg-card p-5 transition-all duration-300",
+        onSelect && "cursor-pointer",
+        selected ? "border-premium shadow-pop ring-1 ring-premium" : "hover:-translate-y-1 hover:border-premium/60 hover:shadow-pop",
+      )}
+    >
+      <span className={cn("absolute inset-y-0 left-0 w-1 bg-gold transition-opacity", selected || a.isDefault ? "opacity-100" : "opacity-0 group-hover:opacity-100")} />
       <div className="flex items-start gap-3">
-        {onSelect && <span className={cn("mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border-2", selected ? "border-primary" : "border-input")}>{selected && <span className="h-2 w-2 rounded-full bg-primary" />}</span>}
+        {onSelect && (
+          <span className={cn("mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border-2", selected ? "border-premium" : "border-input")}>
+            {selected && <span className="h-2 w-2 rounded-full bg-premium" />}
+          </span>
+        )}
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-neutral-950 text-premium ring-1 ring-premium/40">
+          <TypeIcon className="h-5 w-5" />
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-2 text-sm font-black">{a.name}
-            <span className="rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase text-success">{a.type}</span>
-            {a.isDefault && <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase">Default</span>}
+          <p className="flex flex-wrap items-center gap-2 text-sm font-black">
+            {a.name}
+            <span className="rounded-full border border-premium/50 bg-premium/10 px-2 py-0.5 text-[10px] font-bold uppercase text-premium">{a.type}</span>
+            {a.isDefault && <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-black uppercase text-white">Default</span>}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">{a.address}, {a.locality}, {a.city}, {a.state} - {a.pincode}</p>
-          <p className="mt-1 text-sm">Mobile: <b>{a.mobile}</b></p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{a.address}, {a.locality}, {a.city}, {a.state} - {a.pincode}</p>
+          <p className="mt-2 flex items-center gap-1.5 text-sm"><Phone className="h-3.5 w-3.5 text-premium" /> <b>{a.mobile}</b></p>
           {actions}
         </div>
       </div>

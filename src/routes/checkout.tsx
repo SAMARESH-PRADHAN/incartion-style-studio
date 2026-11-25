@@ -50,7 +50,7 @@ function luhn(n: string) {
 function SuccessModal({ order, onClose }: { order: Order; onClose: (to: "/orders" | "/") => void }) {
   useEffect(() => {
     import("canvas-confetti").then(({ default: confetti }) => {
-      const colors = ["#121214", "#27272A", "#A1A1AA", "#FFFFFF"];
+const colors = ["#FF3F6C", "#FF905A", "#FFD23F", "#03A685", "#3B82F6", "#8B5CF6", "#EC4899"];
       confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 }, colors });
       setTimeout(() => confetti({ particleCount: 80, angle: 60, spread: 70, origin: { x: 0 }, colors }), 300);
       setTimeout(() => confetti({ particleCount: 80, angle: 120, spread: 70, origin: { x: 1 }, colors }), 500);
@@ -60,8 +60,8 @@ function SuccessModal({ order, onClose }: { order: Order; onClose: (to: "/orders
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-[60] grid place-items-center bg-overlay/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Order placed">
       <motion.div initial={{ scale: 0.8, y: 30 }} animate={{ scale: 1, y: 0 }} transition={{ type: "spring", damping: 16 }} className="w-full max-w-md rounded-md bg-background p-8 text-center shadow-pop">
         <svg viewBox="0 0 52 52" className="mx-auto h-24 w-24">
-          <circle cx="26" cy="26" r="24" fill="none" className="stroke-success" strokeWidth="3" strokeDasharray="151" strokeDashoffset="151" style={{ animation: "draw 0.6s ease-out forwards" }} />
-          <path d="M14 27l8 8 16-16" fill="none" className="stroke-success" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset="40" style={{ animation: "draw 0.4s 0.55s ease-out forwards" }} />
+          <circle cx="26" cy="26" r="24" fill="none" stroke="#16a34a" strokeWidth="3" strokeDasharray="151" strokeDashoffset="151" style={{ animation: "draw 0.6s ease-out forwards" }} />
+          <path d="M14 27l8 8 16-16" fill="none" stroke="#16a34a" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset="40" style={{ animation: "draw 0.4s 0.55s ease-out forwards" }} />
         </svg>
         <h2 className="mt-4 text-2xl font-black">Order Placed Successfully! 🎉</h2>
         <p className="mt-2 text-sm text-muted-foreground">Thank you for shopping with Incartion.</p>

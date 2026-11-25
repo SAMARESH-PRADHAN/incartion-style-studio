@@ -17,6 +17,7 @@ import { inr, PRINT_OPTIONS } from "@/lib/pricing";
 import { ORDER_STEPS, useCart, useOrders, useReviews, useSession, newId, type Order, type OrderItem } from "@/store";
 import { downloadInvoice } from "@/lib/invoice";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
@@ -59,7 +60,7 @@ function ReviewDialog({ item, onClose, onDone }: { item: OrderItem; onClose: () 
         <div className="flex gap-1" role="radiogroup" aria-label="Rating">
           {[1, 2, 3, 4, 5].map((i) => (
             <button key={i} role="radio" aria-checked={rating === i} aria-label={`${i} stars`} onClick={() => setRating(i)} className="grid h-11 w-11 place-items-center">
-              <Star className={cn("h-8 w-8 transition", i <= rating ? "fill-rating text-rating" : "text-border")} />
+              <Star className={cn("h-8 w-8 transition", i <= rating ? "fill-amber-400 text-amber-400" : "text-border")} />
             </button>
           ))}
         </div>
@@ -94,6 +95,8 @@ function OrdersPage() {
   const [open, setOpen] = useState<string | null>(null);
   const [review, setReview] = useState<{ order: string; item: OrderItem } | null>(null);
   const detail = orders.find((o) => o.id === open);
+  const activeCount = orders.filter((o) => !o.cancelled && o.status < 5).length;
+const deliveredCount = orders.filter((o) => !o.cancelled && o.status === 5).length;
 
   // Demo: auto-progress active orders every 20 seconds
   useEffect(() => {
@@ -110,60 +113,97 @@ function OrdersPage() {
   };
 
   if (!orders.length)
-    return (
-      <div className="flex flex-col items-center px-4 py-24 text-center">
-        <PackageOpen className="h-20 w-20 text-primary/40" />
-        <p className="mt-4 text-xl font-black">No orders yet</p>
-        <p className="mt-1 text-sm text-muted-foreground">Your placed orders will appear here.</p>
-        <Button asChild className="mt-6"><Link to="/products">Start shopping</Link></Button>
-      </div>
-    );
+  return (
+    <div className="flex flex-col items-center px-4 py-24 text-center">
+      <span className="grid h-24 w-24 place-items-center rounded-full bg-neutral-950 text-premium ring-2 ring-premium/40"><PackageOpen className="h-11 w-11" /></span>
+      <p className="mt-5 text-xl font-black">No orders yet</p>
+      <p className="mt-1 text-sm text-muted-foreground">Your placed orders will appear here.</p>
+      <Button asChild className="mt-6"><Link to="/products">Start shopping</Link></Button>
+    </div>
+  );
 
   return (
-    <Container className="max-w-5xl py-6">
-      <div className="mb-6 rounded-md bg-brand p-5 text-primary-foreground">
-        <p className="eyebrow opacity-90">My account</p>
-        <h1 className="text-2xl font-black">My Orders</h1>
-        <p className="text-sm opacity-90">{orders.length} order{orders.length > 1 ? "s" : ""} · Status updates automatically every 20s (demo)</p>
-      </div>
-      <div className="space-y-5">
-        {orders.map((o) => {
+  <div>
+    <section className="relative overflow-hidden bg-neutral-950 text-white">
+      <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-premium/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 left-10 h-60 w-60 rounded-full bg-premium/15 blur-3xl" />
+      <Container className="relative max-w-5xl py-8 sm:py-12">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+          <p className="eyebrow flex items-center gap-2 text-premium"><span className="h-px w-8 bg-premium" /> My account</p>
+          <h1 className="mt-2 text-2xl font-black uppercase tracking-wide sm:text-4xl">My Orders</h1>
+          <p className="mt-2 text-sm text-white/70">Status updates automatically every 20s (demo)</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {[["Total", orders.length], ["In progress", activeCount], ["Delivered", deliveredCount]].map(([l, n]) => (
+              <div key={String(l)} className="min-w-24 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-md">
+                <p className="text-2xl font-black text-premium">{n}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-white/70">{l}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </Container>
+      <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gold" />
+    </section>
+
+    <Container className="max-w-5xl py-8">
+      <div className="space-y-6">
+        {orders.map((o, idx) => {
           const delivered = o.status === 5 && !o.cancelled;
           return (
-            <article key={o.id} className="overflow-hidden rounded-md border shadow-card">
-              <header className="flex flex-wrap items-center justify-between gap-3 border-b bg-secondary px-4 py-3">
+            <motion.article
+              key={o.id}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: Math.min(idx, 5) * 0.07 }}
+              className="group overflow-hidden rounded-2xl border bg-card shadow-card transition-all duration-300 hover:border-premium/50 hover:shadow-pop"
+            >
+              <header className="flex flex-wrap items-center justify-between gap-3 bg-neutral-950 px-5 py-4 text-white">
                 <div className="min-w-0">
-                  <p className="text-sm font-black">Order #{o.id}</p>
-                  <p className="text-xs text-muted-foreground">Placed {format(new Date(o.createdAt), "dd MMM yyyy, hh:mm a")} · {inr(o.bill.total)}</p>
+                  <p className="text-sm font-black">Order <span className="text-premium">#{o.id}</span></p>
+                  <p className="text-xs text-white/60">Placed {format(new Date(o.createdAt), "dd MMM yyyy, hh:mm a")}</p>
                 </div>
-                <span className={cn("rounded-full px-3 py-1 text-xs font-black uppercase", o.cancelled ? "bg-destructive/10 text-destructive" : delivered ? "bg-success/15 text-success" : "bg-accent/15 text-accent")}>
-                  {o.cancelled ? "Cancelled" : ORDER_STEPS[o.status]}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-black">{inr(o.bill.total)}</span>
+                  <span className={cn("rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide text-white", o.cancelled ? "bg-red-500" : delivered ? "bg-emerald-500" : "bg-gold")}>
+                    {o.cancelled ? "Cancelled" : ORDER_STEPS[o.status]}
+                  </span>
+                </div>
               </header>
-              <div className="space-y-5 p-4">
-                <OrderTimeline status={o.status} history={o.history} cancelled={o.cancelled} />
-                {!o.cancelled && !delivered && <p className="text-xs text-muted-foreground">Estimated delivery: <b>{format(addDays(new Date(o.createdAt), 6), "EEE, dd MMM")}</b></p>}
-                <ul className="divide-y">
+              <span className="block h-0.5 bg-gold" />
+
+              <div className="space-y-5 p-5">
+                <div className="rounded-xl bg-secondary/50 p-4">
+                  <OrderTimeline status={o.status} history={o.history} cancelled={o.cancelled} />
+                </div>
+                {!o.cancelled && !delivered && (
+                  <p className="text-xs text-muted-foreground">Estimated delivery: <b className="text-foreground">{format(addDays(new Date(o.createdAt), 6), "EEE, dd MMM")}</b></p>
+                )}
+
+                <ul className="space-y-2">
                   {o.items.map((it) => (
-                    <li key={it.productId} className="flex items-center gap-3 py-3">
-                      <img src={it.image} alt={it.name} className="h-16 w-12 rounded-sm object-cover" />
+                    <li key={it.productId} className="flex items-center gap-3 rounded-xl border p-3 transition-colors hover:border-premium/40">
+                      <img src={it.image} alt={it.name} className="h-20 w-16 rounded-lg object-cover ring-1 ring-border" />
                       <div className="min-w-0 flex-1">
-                        <Link to="/product/$slug" params={{ slug: it.slug }} className="block truncate text-sm font-bold hover:text-primary">{it.name}</Link>
-                        <p className="text-xs text-muted-foreground">{Object.entries(it.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")} · {inr(it.subtotal + (it.printCharges ?? 0))}</p>
+                        <Link to="/product/$slug" params={{ slug: it.slug }} className="block truncate text-sm font-black hover:text-premium">{it.name}</Link>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{Object.entries(it.sizes).filter(([, v]) => v).map(([k, v]) => `${k}×${v}`).join(", ")}</p>
+                        <p className="mt-1 text-sm font-black">{inr(it.subtotal + (it.printCharges ?? 0))}</p>
                       </div>
                       {delivered && (o.reviewed.includes(it.productId) ? (
-                        <span className="text-xs font-bold text-success">Reviewed ✓</span>
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Reviewed ✓</span>
                       ) : (
-                        <Button size="sm" variant="outlinePink" onClick={() => setReview({ order: o.id, item: it })}><Star /> Rate</Button>
+                        <Button size="sm" variant="outline" onClick={() => setReview({ order: o.id, item: it })}><Star /> Rate</Button>
                       ))}
                     </li>
                   ))}
                 </ul>
-                <div className="flex flex-wrap gap-2">
+
+                <div className="flex flex-wrap gap-2 border-t pt-4">
                   <Button size="sm" variant="outline" onClick={() => setOpen(o.id)}>Details <ChevronRight /></Button>
-                  {delivered && <Button size="sm" onClick={() => downloadInvoice(o, user).then(() => toast.success("Invoice downloaded"))}><Download /> Download invoice</Button>}
+                  {delivered && (
+                    <Button size="sm" className="bg-gold text-white shadow-md" onClick={() => downloadInvoice(o, user).then(() => toast.success("Invoice downloaded"))}><Download /> Download invoice</Button>
+                  )}
                   {!o.cancelled && o.status < 3 && (
-                    <Button size="sm" variant="outline" onClick={() => { if (confirm("Cancel this order?")) { update(user.id, o.id, (x) => ({ ...x, cancelled: true })); toast("Order cancelled"); } }}>
+                    <Button size="sm" variant="outline" className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => { if (confirm("Cancel this order?")) { update(user.id, o.id, (x) => ({ ...x, cancelled: true })); toast("Order cancelled"); } }}>
                       <XCircle /> Cancel order
                     </Button>
                   )}
@@ -173,19 +213,19 @@ function OrdersPage() {
                   )}
                 </div>
               </div>
-            </article>
+            </motion.article>
           );
         })}
       </div>
 
       <Sheet open={!!detail} onOpenChange={(v) => !v && setOpen(null)}>
-        <SheetContent side="right" className="w-[92vw] max-w-md overflow-y-auto">
+        <SheetContent side="right" className="w-[92vw] max-w-md overflow-y-auto border-l-2 border-l-premium">
           {detail && (
             <>
               <SheetHeader><SheetTitle>Order #{detail.id}</SheetTitle></SheetHeader>
               <div className="mt-4 space-y-5 text-sm">
                 <section>
-                  <p className="eyebrow mb-2">Items</p>
+                  <p className="eyebrow mb-2 flex items-center gap-2"><span className="h-3 w-1 rounded-full bg-gold" />Items</p>
                   {detail.items.map((it) => (
                     <div key={it.productId} className="mb-2 rounded-sm border p-2">
                       <p className="font-bold">{it.name}</p>
@@ -197,16 +237,16 @@ function OrdersPage() {
                   ))}
                 </section>
                 <section>
-                  <p className="eyebrow mb-2">Delivery address</p>
+                  <p className="eyebrow mb-2 flex items-center gap-2"><span className="h-3 w-1 rounded-full bg-gold" />Delivery address</p>
                   <p><b>{detail.address.name}</b>, {detail.address.address}, {detail.address.locality}, {detail.address.city}, {detail.address.state} - {detail.address.pincode}</p>
                   <p>Mobile: {detail.address.mobile}</p>
                 </section>
                 <section>
-                  <p className="eyebrow mb-2">Payment</p>
+                  <p className="eyebrow mb-2 flex items-center gap-2"><span className="h-3 w-1 rounded-full bg-gold" />Payment</p>
                   <p>{detail.payment.method} · {detail.payment.detail}</p>
                 </section>
                 <section>
-                  <p className="eyebrow mb-2">Bill</p>
+                  <p className="eyebrow mb-2 flex items-center gap-2"><span className="h-3 w-1 rounded-full bg-gold" />Bill</p>
                   <BillRows bill={detail.bill} couponCode={detail.coupon} />
                 </section>
               </div>
@@ -223,5 +263,6 @@ function OrdersPage() {
         />
       )}
     </Container>
+    </div>
   );
 }

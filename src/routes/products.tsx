@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/common/Reveal";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Search = { category?: string; sub?: string; material?: string; min?: number; max?: number; sort?: string; exclusive?: boolean };
 const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
@@ -106,120 +107,156 @@ function ProductsPage() {
   ];
   const clearAll = () => navigate({ search: search.exclusive ? { exclusive: true } : {}, replace: true });
 
+
   return (
-    <div>
-      <div className={cn("sticky top-14 z-30 border-b bg-background/95 backdrop-blur transition-all lg:top-16", scrolled ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0 h-0 overflow-hidden border-0")}>
-        <div className="no-scrollbar mx-auto flex max-w-[1536px] gap-2 overflow-x-auto px-3 py-2 sm:px-6">
-          {(single ? single.subs.map((s) => ({ slug: s.slug, name: s.name, isSub: true })) : categories.map((c) => ({ slug: c.slug, name: c.name, isSub: false }))).map((x) => {
-            const on = x.isSub ? f.subs.includes(x.slug) : f.cats.includes(x.slug);
-            return (
-              <button
-                key={x.slug}
-                onClick={() => (x.isSub ? update({ subs: on ? f.subs.filter((s) => s !== x.slug) : [x.slug] }) : update({ cats: [x.slug], subs: [] }))}
-                className={cn("shrink-0 rounded-full border px-4 py-1.5 text-xs font-bold uppercase", on ? "border-primary bg-primary text-primary-foreground" : "hover:border-foreground")}
-              >
-                {x.name}
-              </button>
-            );
-          })}
-        </div>
+  <div>
+    {/* Sticky category strip (appears on scroll) */}
+    <div className={cn("sticky top-14 z-30 border-b border-premium/20 bg-background/95 backdrop-blur transition-all lg:top-[72px]", scrolled ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0 h-0 overflow-hidden border-0")}>
+      <div className="no-scrollbar mx-auto flex max-w-[1536px] gap-2 overflow-x-auto px-3 py-2.5 sm:px-6">
+        {(single ? single.subs.map((s) => ({ slug: s.slug, name: s.name, isSub: true })) : categories.map((c) => ({ slug: c.slug, name: c.name, isSub: false }))).map((x) => {
+          const on = x.isSub ? f.subs.includes(x.slug) : f.cats.includes(x.slug);
+          return (
+            <button
+              key={x.slug}
+              onClick={() => (x.isSub ? update({ subs: on ? f.subs.filter((s) => s !== x.slug) : [x.slug] }) : update({ cats: [x.slug], subs: [] }))}
+              className={cn("shrink-0 rounded-full border px-4 py-1.5 text-xs font-bold uppercase transition-colors", on ? "border-premium bg-neutral-950 text-premium" : "hover:border-premium hover:text-premium")}
+            >
+              {x.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Header banner */}
+    <section className="relative overflow-hidden bg-neutral-950 text-white">
+      {single && <img src={single.image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-30" />}
+      <div className="absolute inset-0 bg-linear-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
+      <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-premium/20 blur-3xl" />
+      <Container className="relative py-8 sm:py-12">
+        <nav aria-label="Breadcrumb" className="text-xs text-white/60">
+          <Link to="/" className="hover:text-premium">Home</Link> / <Link to="/products" className="hover:text-premium">Products</Link>
+          {single && <> / <span className="font-bold text-premium">{single.name}</span></>}
+        </nav>
+        <motion.div key={title} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+          <p className="eyebrow mt-4 flex items-center gap-2 text-premium"><span className="h-px w-8 bg-premium" /> Collection</p>
+          <h1 className="mt-2 text-2xl font-black uppercase tracking-wide sm:text-4xl">{title}</h1>
+          <p className="mt-2 max-w-xl text-sm text-white/70 sm:text-base">
+            {search.exclusive ? "Readymade styles, in stock and ready to ship." : single ? single.tagline : "Uniforms and garments from 1 piece to bulk."}
+          </p>
+          <span className="mt-4 inline-flex items-center rounded-full border border-premium/50 bg-premium/10 px-3 py-1 text-xs font-bold text-premium">
+            {results.length} items
+          </span>
+        </motion.div>
+      </Container>
+      <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gold" />
+    </section>
+
+    <Container className="pb-28 pt-6 lg:pb-10">
+      {/* Toolbar */}
+      <div className="mb-5 hidden items-center justify-between lg:flex">
+        <p className="text-sm text-muted-foreground">Showing <b className="text-foreground">{results.length}</b> products</p>
+        <label className="flex items-center gap-2 rounded-full border px-4 text-sm transition-colors hover:border-premium">
+          <span className="text-muted-foreground">Sort by:</span>
+          <select value={sort} onChange={(e) => update({ sort: e.target.value })} className="h-10 cursor-pointer bg-transparent font-bold outline-none">
+            {SORTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+          </select>
+        </label>
       </div>
 
-      <Container className="py-4 sm:py-6">
-        <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-foreground">Home</Link> / <Link to="/products" className="hover:text-foreground">Products</Link>
-          {single && <> / <span className="font-bold text-foreground">{single.name}</span></>}
-        </nav>
-        <div className="mt-2 flex items-center justify-between gap-4">
-          <h1 className="min-w-0 truncate text-lg font-black sm:text-xl">
-            {title} <span className="font-normal text-muted-foreground">- {results.length} items</span>
-          </h1>
-          <label className="hidden items-center gap-2 rounded-sm border px-3 text-sm lg:flex">
-            <span className="text-muted-foreground">Sort by:</span>
-            <select value={sort} onChange={(e) => update({ sort: e.target.value })} className="h-10 bg-transparent font-bold outline-none">
-              {SORTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
-            </select>
-          </label>
-        </div>
-
-        <div className="mt-4 flex gap-8">
-          <aside className="hidden w-60 shrink-0 lg:block">
-            <div className="sticky top-32">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-black uppercase">Filters</p>
-                {chips.length > 0 && <button onClick={clearAll} className="text-xs font-bold text-primary">CLEAR ALL</button>}
-              </div>
-              <FilterSidebar f={f} onChange={update} />
+      <div className="flex gap-8">
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="sticky top-[100px] rounded-xl border bg-card p-5 shadow-card">
+            <div className="mb-4 flex items-center justify-between">
+              <p className="flex items-center gap-2 text-sm font-black uppercase"><span className="h-4 w-1 rounded-full bg-gold" /> Filters</p>
+              {chips.length > 0 && <button onClick={clearAll} className="text-xs font-bold text-premium hover:underline">CLEAR ALL</button>}
             </div>
-          </aside>
-          <div className="min-w-0 flex-1">
+            <FilterSidebar f={f} onChange={update} />
+          </div>
+        </aside>
+
+        <div className="min-w-0 flex-1">
+          <AnimatePresence>
             {chips.length > 0 && (
-              <div className="mb-4 flex flex-wrap gap-2">
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mb-4 flex flex-wrap gap-2 overflow-hidden">
                 {chips.map((c) => (
-                  <button key={c.k} onClick={c.rm} className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold hover:border-foreground">
+                  <button key={c.k} onClick={c.rm} className="flex items-center gap-1.5 rounded-full border border-premium/50 bg-neutral-950 px-3 py-1.5 text-xs font-bold text-premium transition hover:bg-neutral-800">
                     {c.l} <X className="h-3 w-3" />
                   </button>
                 ))}
-                <button onClick={clearAll} className="px-2 text-xs font-bold text-primary">Clear all</button>
-              </div>
+                <button onClick={clearAll} className="px-2 text-xs font-bold text-premium hover:underline">Clear all</button>
+              </motion.div>
             )}
-            {loading ? (
-              <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-                {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
-              </div>
-            ) : results.length === 0 ? (
-              <div className="flex flex-col items-center py-20 text-center">
-                <SearchX className="h-16 w-16 text-muted-foreground/50" />
-                <p className="mt-4 text-lg font-black">No products match these filters</p>
-                <p className="mt-1 text-sm text-muted-foreground">Try removing a filter or widening the price range.</p>
-                <Button className="mt-6" onClick={clearAll}>Clear all filters</Button>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-                  {results.slice(0, shown).map((p) => <ProductCard key={p.id} p={p} />)}
-                </div>
-                {shown < results.length && (
-                  <div ref={sentinel} className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-                    {Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </Container>
+          </AnimatePresence>
 
-      <div className="fixed inset-x-0 bottom-14 z-30 grid grid-cols-2 border-t bg-background lg:hidden">
-        <button onClick={() => setSheet("sort")} className="flex h-12 items-center justify-center gap-2 border-r text-sm font-bold uppercase"><ArrowUpDown className="h-4 w-4" /> Sort</button>
-        <button onClick={() => setSheet("filter")} className="flex h-12 items-center justify-center gap-2 text-sm font-bold uppercase">
-          <SlidersHorizontal className="h-4 w-4" /> Filter {chips.length > 0 && <span className="grid h-5 w-5 place-items-center rounded-full bg-primary text-[10px] text-primary-foreground">{chips.length}</span>}
-        </button>
-      </div>
-      <Sheet open={!!sheet} onOpenChange={(o) => !o && setSheet(null)}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-xl p-0">
-          <SheetHeader className="sticky top-0 border-b bg-background p-4">
-            <SheetTitle className="eyebrow text-left">{sheet === "sort" ? "Sort by" : "Filters"}</SheetTitle>
-          </SheetHeader>
-          {sheet === "sort" ? (
-            <div className="p-2 pb-6">
-              {SORTS.map((s) => (
-                <button key={s.v} onClick={() => { update({ sort: s.v }); setSheet(null); }} className={cn("flex h-12 w-full items-center px-4 text-left text-sm", sort === s.v && "font-black text-primary")}>
-                  {s.l}
-                </button>
-              ))}
+          {loading ? (
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
             </div>
+          ) : results.length === 0 ? (
+            <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center rounded-xl border border-dashed border-premium/40 bg-secondary/40 px-4 py-20 text-center">
+              <span className="grid h-20 w-20 place-items-center rounded-full bg-neutral-950 text-premium ring-2 ring-premium/40"><SearchX className="h-9 w-9" /></span>
+              <p className="mt-5 text-lg font-black">No products match these filters</p>
+              <p className="mt-1 text-sm text-muted-foreground">Try removing a filter or widening the price range.</p>
+              <Button className="mt-6" onClick={clearAll}>Clear all filters</Button>
+            </motion.div>
           ) : (
             <>
-              <div className="p-4"><FilterSidebar f={f} onChange={update} /></div>
-              <div className="sticky bottom-0 grid grid-cols-2 gap-2 border-t bg-background p-3">
-                <Button variant="outline" onClick={clearAll}>Clear all</Button>
-                <Button onClick={() => setSheet(null)}>Show {results.length} items</Button>
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+                {results.slice(0, shown).map((p, i) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: Math.min(i % 12, 11) * 0.05, ease: "easeOut" }}
+                  >
+                    <ProductCard p={p} />
+                  </motion.div>
+                ))}
               </div>
+              {shown < results.length && (
+                <div ref={sentinel} className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+                </div>
+              )}
             </>
           )}
-        </SheetContent>
-      </Sheet>
+        </div>
+      </div>
+    </Container>
+
+    {/* Mobile floating Sort / Filter pill */}
+    <div className="fixed inset-x-4 bottom-[4.5rem] z-30 grid grid-cols-2 overflow-hidden rounded-full border border-premium/50 bg-neutral-950 text-white shadow-pop lg:hidden">
+      <button onClick={() => setSheet("sort")} className="flex h-12 items-center justify-center gap-2 border-r border-white/15 text-sm font-bold uppercase active:bg-neutral-800"><ArrowUpDown className="h-4 w-4 text-premium" /> Sort</button>
+      <button onClick={() => setSheet("filter")} className="flex h-12 items-center justify-center gap-2 text-sm font-bold uppercase active:bg-neutral-800">
+        <SlidersHorizontal className="h-4 w-4 text-premium" /> Filter {chips.length > 0 && <span className="grid h-5 w-5 place-items-center rounded-full bg-gold text-[10px] font-black text-neutral-950">{chips.length}</span>}
+      </button>
     </div>
-  );
+
+    <Sheet open={!!sheet} onOpenChange={(o) => !o && setSheet(null)}>
+      <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl border-t-2 border-t-premium p-0">
+        <SheetHeader className="sticky top-0 z-10 border-b bg-background p-4">
+          <SheetTitle className="eyebrow flex items-center gap-2 text-left"><span className="h-4 w-1 rounded-full bg-gold" />{sheet === "sort" ? "Sort by" : "Filters"}</SheetTitle>
+        </SheetHeader>
+        {sheet === "sort" ? (
+          <div className="p-2 pb-6">
+            {SORTS.map((s) => (
+              <button key={s.v} onClick={() => { update({ sort: s.v }); setSheet(null); }} className={cn("flex h-12 w-full items-center justify-between rounded-lg px-4 text-left text-sm", sort === s.v ? "bg-neutral-950 font-black text-premium" : "hover:bg-secondary")}>
+                {s.l} {sort === s.v && <span>✓</span>}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <>
+            <div className="p-4"><FilterSidebar f={f} onChange={update} /></div>
+            <div className="sticky bottom-0 grid grid-cols-2 gap-2 border-t bg-background p-3">
+              <Button variant="outline" onClick={clearAll}>Clear all</Button>
+              <Button onClick={() => setSheet(null)}>Show {results.length} items</Button>
+            </div>
+          </>
+        )}
+      </SheetContent>
+    </Sheet>
+  </div>
+);
 }

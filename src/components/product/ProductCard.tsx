@@ -11,8 +11,8 @@ export function Price({ p, size = "sm" }: { p: Pick<Product, "price" | "mrp" | "
   return (
     <div className={cn("flex flex-wrap items-baseline gap-x-2", size === "lg" ? "text-2xl" : "text-sm")}>
       <span className="font-black">{inr(p.price)}</span>
-      <span className={cn("text-muted-foreground line-through", size === "lg" ? "text-lg" : "text-xs")}>{inr(p.mrp)}</span>
-      <span className={cn("font-bold text-accent", size === "lg" ? "text-lg" : "text-xs")}>({p.discountPercent}% OFF)</span>
+      <span className={cn("text-red-500 line-through", size === "lg" ? "text-lg" : "text-xs")}>{inr(p.mrp)}</span>
+      <span className={cn("font-bold text-emerald-600", size === "lg" ? "text-lg" : "text-xs")}>({p.discountPercent}% OFF)</span>
     </div>
   );
 }
@@ -24,16 +24,16 @@ export function ProductCard({ p }: { p: Product }) {
   const setUI = useUI((s) => s.set);
   const on = hydrated && wished;
   return (
-    <article className="group premium-lift relative overflow-hidden rounded-sm border border-border/70 bg-card">
+    <article className="group premium-lift relative overflow-hidden rounded-lg border border-border/70 bg-card transition-colors hover:border-premium/60">
       <Link to="/product/$slug" params={{ slug: p.slug }} className="block">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
           <img src={p.images[0]} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-0" />
           <img src={p.images[1]} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100" />
-          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-sm bg-background/90 px-1.5 py-0.5 text-[11px] font-bold">
-            {p.rating} <span className="text-rating">★</span> <span className="text-muted-foreground">| {formatCount(p.ratingCount)}</span>
-          </span>
+          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-sm bg-emerald-600 px-1.5 py-0.5 text-[11px] font-bold text-white shadow">
+  {p.rating} <span>★</span> <span className="text-white/80">| {formatCount(p.ratingCount)}</span>
+</span>
           {(p.isNew || p.isBestSeller) && (
-            <span className={cn("absolute left-0 top-2 rounded-r-sm px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary-foreground", p.isNew ? "bg-success" : "bg-primary")}>
+            <span className={cn("absolute left-0 top-2 rounded-r-sm px-2 py-0.5 text-[10px] font-black uppercase tracking-wider", p.isNew ? "bg-neutral-950 text-premium" : "bg-gold text-neutral-950")}>
               {p.isNew ? "New" : "Bestseller"}
             </span>
           )}
@@ -53,10 +53,10 @@ export function ProductCard({ p }: { p: Product }) {
         }}
         className={cn(
           "absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full border border-border/70 bg-background/90 shadow-card backdrop-blur-sm transition hover:scale-105 lg:opacity-0 lg:group-hover:opacity-100",
-          on && "lg:opacity-100",
+          on && "border-rose-300 lg:opacity-100",
         )}
       >
-        <Heart className={cn("h-4 w-4", on ? "fill-primary text-primary" : "")} />
+        <Heart className={cn("h-4 w-4", on ? "fill-rose-500 text-rose-500" : "")} />
       </button>
       <button
         onClick={() => setUI({ quickViewId: p.id })}

@@ -43,8 +43,8 @@ export function MobileDrawer() {
           )}
         </SheetHeader>
         <div className="p-2">
-          <Link to="/products" search={{ exclusive: true }} onClick={close} className="premium-sheen mx-2 mb-3 flex min-h-12 items-center gap-3 rounded-full border border-foreground/15 bg-secondary px-4 text-sm font-black text-foreground shadow-sm">
-            <Sparkles className="h-4 w-4" /> Incartion Exclusive
+          <Link to="/products" search={{ exclusive: true }} onClick={close} className="premium-sheen mx-2 mb-3 flex min-h-12 items-center gap-3 rounded-full border border-premium/60 bg-linear-to-r from-neutral-950 via-neutral-800 to-neutral-950 px-4 text-sm font-black text-premium shadow-md">
+            <Sparkles className="h-4 w-4" /> Incartion Exclusive Product
           </Link>
           <p className="eyebrow px-3 pb-1 pt-3 text-muted-foreground">Shop by category</p>
           <Accordion type="single" collapsible>

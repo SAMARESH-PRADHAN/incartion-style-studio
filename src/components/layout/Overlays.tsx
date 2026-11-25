@@ -148,27 +148,47 @@ export function QuoteModal() {
 export function FloatingButtons() {
   const [show, setShow] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const hideOnMobileProduct = path.startsWith("/product/");
+  const hideOnMobile = path.startsWith("/product/") || path === "/cart";
   useEffect(() => {
     const on = () => setShow(window.scrollY > 600);
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
+  const base =
+    "group/fab relative flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl active:scale-95";
+  const label =
+    "hidden max-w-0 whitespace-nowrap text-sm font-bold opacity-0 transition-all duration-300 lg:block lg:group-hover/fab:max-w-24 lg:group-hover/fab:opacity-100";
   return (
-    <div className={`fixed bottom-20 right-3 z-30 flex flex-col gap-2 lg:bottom-6 lg:right-6 ${hideOnMobileProduct ? "hidden lg:flex" : ""}`}>
+    <div className={`fixed bottom-20 right-3 z-30 flex flex-col items-end gap-3 lg:bottom-6 lg:right-6 ${hideOnMobile ? "hidden lg:flex" : ""}`}>
       {show && (
-        <button aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="grid h-11 w-11 place-items-center rounded-full border bg-background shadow-pop">
+        <button
+          aria-label="Scroll to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="grid h-11 w-11 place-items-center rounded-full border bg-background shadow-pop transition hover:-translate-y-0.5"
+        >
           <ArrowUp className="h-5 w-5" />
         </button>
       )}
-      <a href="tel:+919861000000" aria-label="Call us" className="grid h-11 w-11 place-items-center rounded-full bg-foreground text-background shadow-pop">
-        <Phone className="h-5 w-5" />
+      <a
+        href="tel:+919861000000"
+        aria-label="Call us"
+        className={`${base} w-12 bg-linear-to-br from-blue-500 to-blue-700 shadow-blue-600/40 lg:hover:w-28 lg:hover:px-4`}
+      >
+        <Phone className="h-5 w-5 shrink-0" />
+        <span className={label}>Call us</span>
       </a>
-      <a href="https://wa.me/919861000000" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp" className="grid h-12 w-12 place-items-center rounded-full bg-success text-success-foreground shadow-pop">
-        <MessageCircle className="h-6 w-6" />
+      <a
+        href="https://wa.me/919861000000"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Chat on WhatsApp"
+        className={`${base} h-14 w-14 bg-linear-to-br from-[#2BD96B] to-[#128C7E] shadow-[#25D366]/40 lg:hover:w-36 lg:hover:px-4`}
+      >
+        <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366]/30 [animation-duration:2.5s] group-hover/fab:hidden" />
+        <MessageCircle className="relative h-6 w-6 shrink-0" />
+        <span className={`${label} relative`}>WhatsApp</span>
       </a>
     </div>
   );
 }
-
 export { X, Link };

@@ -19,7 +19,7 @@ export function OrderTimeline({ status, history, cancelled }: { status: number; 
       {/* horizontal on md+, vertical on mobile */}
       <div className="relative hidden md:block">
         <div className="absolute left-[8.33%] right-[8.33%] top-5 h-1 rounded-full bg-border">
-          <motion.div className="h-full rounded-full bg-brand" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }} />
+          <motion.div className="h-full rounded-full bg-gold" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }} />
         </div>
         <ol className="relative grid grid-cols-6">
           {ORDER_STEPS.map((s, i) => {
@@ -28,7 +28,7 @@ export function OrderTimeline({ status, history, cancelled }: { status: number; 
             return (
               <li key={s} className="flex flex-col items-center text-center">
                 <span className={cn("relative grid h-10 w-10 place-items-center rounded-full border-2 bg-background transition", done ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground", i === status && "shadow-glow")}>
-                  {i === status && <span className="absolute inset-0 animate-ping rounded-full bg-primary/30" />}
+                  {i === status && <span className="absolute inset-0 animate-ping rounded-full bg-premium/30." />}
                   <I className="relative h-4 w-4" />
                 </span>
                 <span className={cn("mt-2 text-xs font-bold", !done && "text-muted-foreground")}>{s}</span>
@@ -40,7 +40,7 @@ export function OrderTimeline({ status, history, cancelled }: { status: number; 
       </div>
       <ol className="relative space-y-4 md:hidden">
         <div className="absolute bottom-4 left-[15px] top-4 w-0.5 bg-border">
-          <motion.div className="w-full bg-brand" initial={{ height: 0 }} animate={{ height: `${pct}%` }} transition={{ duration: 0.8 }} />
+          <motion.div className="w-full bg-gold" initial={{ height: 0 }} animate={{ height: `${pct}%` }} transition={{ duration: 0.8 }} />
         </div>
         {ORDER_STEPS.map((s, i) => {
           const I = icons[i];
